@@ -1,0 +1,49 @@
+.vbox-container {
+    -fx-spacing: 15;
+    -fx-padding: 20;
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #ccc;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-alignment: center;
+}
+
+.label-title {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+}
+
+.text-field {
+    -fx-font-size: 12px;
+    -fx-padding: 5;
+    -fx-background-color: #fff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-max-width: 160px;
+}
+
+.hbox-container {
+    -fx-spacing: 10;
+    -fx-padding: 20;
+    -fx-alignment: center;
+}
+
+.button {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #005bb5;
+}
+
+.button:disabled {
+    -fx-background-color: #999;
+    -fx-text-fill: #666;
+}
