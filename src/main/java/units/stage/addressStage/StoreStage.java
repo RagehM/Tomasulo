@@ -12,5 +12,9 @@ public class StoreStage extends AddressStage {
     super(busy,address);
     this.stage = "S" + number;
     number++;
+    storeTable.add(this);
+  }
+  public String toString() {
+    return this.stage + " " + super.toString();
   }
 }

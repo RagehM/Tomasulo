@@ -4,12 +4,12 @@ import units.stage.Stage;
 
 import java.util.ArrayList;
 
-public class RegisterUnit {
+public class RegisterFile {
   private String register;
-  private static int number = 1;
+  private static int number = 0;
   private Stage Qi;
   private String content;
-  public static ArrayList<RegisterUnit> registerTable = new ArrayList<RegisterUnit>();
+  public static ArrayList<RegisterFile> registerTable = new ArrayList<RegisterFile>();
 
   public String getRegister() {
     return register;
@@ -35,7 +35,7 @@ public class RegisterUnit {
     this.content = content;
   }
 
-  public RegisterUnit(Stage qi, String content) {
+  public RegisterFile(Stage qi, String content) {
     this.Qi = qi;
     this.content = content;
     this.register = "F" + number;
@@ -43,10 +43,9 @@ public class RegisterUnit {
     registerTable.add(this);
   }
 
-  private void registerUnitInit() {
+  public static void initRegisterFile() {
     for (int i = 0; i < 32; i++) {
-      new RegisterUnit(null, "");
+      new RegisterFile(null, "");
     }
   }
-
 }

@@ -25,4 +25,8 @@ public class AddressStage extends Stage {
     this.busy = busy;
     this.address = address;
   }
+
+  public String toString() {
+    return this.busy + " " + this.address;
+  }
 }

@@ -1,6 +1,5 @@
 package gui.setupStage;
 
-import gui.simulatingStage.RegisterTable;
 import gui.simulatingStage.SimulatingStage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,15 +8,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import units.CacheUnit;
-import units.RegisterUnit;
+import units.Cache;
+import units.RegisterFile;
 import units.stage.addressStage.StoreStage;
-import units.addressUnit.LoadUnit;
 import units.stage.addressStage.LoadStage;
-import units.addressUnit.StoreUnit;
 import units.instructionUnit;
-
-import java.util.ArrayList;
+import units.stage.aluStage.FloatingAdderStage;
+import units.stage.aluStage.FloatingMultiplyStage;
 
 public class SetupStage {
   public static Stage setupMainStage() {
@@ -26,10 +23,10 @@ public class SetupStage {
     Scene scene = new Scene(borderPane, 1500, 600);
 
     HBox loadInstructions = FileSetup.setupFile(stage);
-    HBox cacheSetup = CacheSetup.setupCache();
-    HBox instructionSetup = InstructionSetup.setupInstructions();
-    HBox reservationSetup = StationsSetup.setupStations();
-    HBox bufferSetup = BufferSetup.setupBuffer();
+    HBox cacheSetup = CacheSetup.setup();
+    HBox instructionSetup = InstructionSetup.setup();
+    HBox reservationSetup = AluSetup.setup();
+    HBox bufferSetup = AddressSetup.setup();
 
     Button startButton = new Button("Start!");
 
@@ -38,23 +35,27 @@ public class SetupStage {
       instructionUnit instUnit = new instructionUnit();
       instUnit.parse();
 
-      CacheUnit cache = new CacheUnit(CacheSetup.getLatency(), CacheSetup.getMissPenalty(), CacheSetup.getCacheSize(), CacheSetup.getBlockSize());
+      Cache cache = new Cache(CacheSetup.getLatency(), CacheSetup.getMissPenalty(), CacheSetup.getCacheSize(), CacheSetup.getBlockSize());
 
-      ArrayList loadStages = new ArrayList<LoadStage>();
-      for(int i = 0; i < BufferSetup.getLoadBuffer(); i++) {
-        LoadStage loadStage = new LoadStage(false,"");
-        loadStages.add(loadStage);
+      RegisterFile.initRegisterFile();
+
+      for(int i = 0; i < AddressSetup.getLoadSize(); i++) {
+        new LoadStage(false, "");
       }
-      LoadUnit loadUnit = new LoadUnit(loadStages);
 
-      ArrayList storeStages = new ArrayList<StoreStage>();
-      for(int i = 0; i < BufferSetup.getStoreBuffer(); i++) {
-        StoreStage storeStage = new StoreStage(false,"");
-        storeStages.add(storeStage);
+      for(int i = 0; i < AddressSetup.getStoreSize(); i++) {
+        new StoreStage(false,"");
       }
-      StoreUnit storeUnit = new StoreUnit(storeStages);
 
-      Stage simStage = SimulatingStage.setupSimulatingStage(instUnit, loadUnit, storeUnit);
+      for(int i = 0; i < AluSetup.getFloatingAdder(); i++) {
+        new FloatingAdderStage(false, "", null,null,null,null);
+      }
+
+      for(int i = 0; i < AluSetup.getFloatingMul(); i++) {
+        new FloatingMultiplyStage(false, "", null,null,null,null);
+      }
+
+      Stage simStage = SimulatingStage.setupSimulatingStage(instUnit, units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable, units.stage.Stage.multiplyTable);
       simStage.show();
       stage.hide();
     });

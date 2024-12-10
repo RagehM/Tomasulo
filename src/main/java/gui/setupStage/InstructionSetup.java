@@ -13,30 +13,18 @@ public class InstructionSetup {
   private static TextField memoryLatency = new TextField();
 
   public static int getIntegerLatency() {
-    try {
-      return Integer.parseInt(integerLatency.getText());
-    } catch (NumberFormatException e) {
-      return 0;
-    }
+    return Integer.parseInt(integerLatency.getText());
   }
 
   public static int getFloatingLatency() {
-    try {
-      return Integer.parseInt(floatingLatency.getText());
-    } catch (NumberFormatException e) {
-      return 0; // Default value if input is invalid
-    }
+    return Integer.parseInt(floatingLatency.getText());
   }
 
   public static int getMemoryLatency() {
-    try {
-      return Integer.parseInt(memoryLatency.getText());
-    } catch (NumberFormatException e) {
-      return 0; // Default value if input is invalid
-    }
+    return Integer.parseInt(memoryLatency.getText());
   }
 
-  public static HBox setupInstructions() {
+  public static HBox setup() {
     HBox hbox = new HBox();
     hbox.setSpacing(10);
     hbox.setAlignment(javafx.geometry.Pos.CENTER);

@@ -6,23 +6,23 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-public class StationsSetup {
+public class AluSetup {
   private static TextField floatingAdder = new TextField();
   private static TextField floatingMul = new TextField();
   private static TextField integerAdder = new TextField();
 
-  public static TextField getFloatingAdder() {
-    return floatingAdder;
+  public static int getFloatingAdder() {
+    return Integer.parseInt(floatingAdder.getText());
   }
 
-  public static TextField getFloatingMul() {
-    return floatingMul;
+  public static int getFloatingMul() {
+    return Integer.parseInt(floatingMul.getText());
   }
 
-  public static TextField getIntegerAdder() {
-    return integerAdder;
+  public static int getIntegerAdder() {
+    return Integer.parseInt(integerAdder.getText());
   }
-  public static HBox setupStations() {
+  public static HBox setup() {
     HBox hbox = new HBox();
     hbox.setSpacing(10);
     hbox.setAlignment(javafx.geometry.Pos.CENTER);

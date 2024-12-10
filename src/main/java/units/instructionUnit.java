@@ -1,13 +1,14 @@
 package units;
+
 import gui.setupStage.InstructionSetup;
 import instructions.FloatingInstruction;
 import instructions.Instruction;
 import instructions.IntegerInstruction;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.io.*;
+
 public class instructionUnit {
 
   private Queue<Instruction> instructionQueue = new LinkedList<>();

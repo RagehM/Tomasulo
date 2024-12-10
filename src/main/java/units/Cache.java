@@ -1,6 +1,6 @@
 package units;
 
-public class CacheUnit {
+public class Cache {
   private int hitLatency = 0;
   private int missPenalty = 0;
   private int cacheSize;
@@ -38,7 +38,7 @@ public class CacheUnit {
     this.blockSize = blockSize;
   }
 
-  public CacheUnit (int hitLatency, int missPenalty, int cacheSize, int blockSize) {
+  public Cache (int hitLatency, int missPenalty, int cacheSize, int blockSize) {
     this.hitLatency = hitLatency;
     this.missPenalty = missPenalty;
     this.cacheSize = cacheSize;

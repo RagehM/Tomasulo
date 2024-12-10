@@ -6,19 +6,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-public class BufferSetup {
-  private static TextField loadBuffer = new TextField();
-  private static TextField storeBuffer = new TextField();
+public class AddressSetup {
+  private static TextField loadSize = new TextField();
+  private static TextField storeSize = new TextField();
 
-  public static int getLoadBuffer() {
-    return Integer.parseInt(loadBuffer.getText());
+  public static int getLoadSize() {
+    return Integer.parseInt(loadSize.getText());
   }
 
-  public static int getStoreBuffer() {
-    return Integer.parseInt(storeBuffer.getText());
+  public static int getStoreSize() {
+    return Integer.parseInt(storeSize.getText());
   }
 
-  public static HBox setupBuffer(){
+  public static HBox setup(){
     HBox hbox = new HBox();
     hbox.setSpacing(10);
     hbox.setAlignment(javafx.geometry.Pos.CENTER);
@@ -32,17 +32,17 @@ public class BufferSetup {
 
 
     Label loadBufferLabel = new Label("load Buffer Size");
-    loadBuffer.setPromptText("Enter size");
+    loadSize.setPromptText("Enter size");
 
     Label storeBufferLabel = new Label("Store Buffer Size");
-    storeBuffer.setPromptText("Enter size");
+    storeSize.setPromptText("Enter size");
 
 
     gridPane.add(loadBufferLabel, 0, 0);
-    gridPane.add(loadBuffer, 1, 0);
+    gridPane.add(loadSize, 1, 0);
 
     gridPane.add(storeBufferLabel, 0, 1);
-    gridPane.add(storeBuffer, 1, 1);
+    gridPane.add(storeSize, 1, 1);
 
     hbox.getChildren().add(gridPane);
 

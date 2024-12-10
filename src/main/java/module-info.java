@@ -11,5 +11,5 @@ module gui {
   opens gui.setupStage to javafx.fxml;
   opens units to javafx.base;
   opens units.stage.addressStage to javafx.base;
-  opens units.addressUnit to javafx.base;
+  opens units.stage.aluStage to javafx.base;
 }

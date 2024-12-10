@@ -28,7 +28,7 @@ public class CacheSetup {
     return Integer.parseInt(blockSizeField.getText());
   }
 
-  public static HBox setupCache() {
+  public static HBox setup() {
     HBox hbox = new HBox();
     hbox.setSpacing(10);
     hbox.setAlignment(javafx.geometry.Pos.CENTER);

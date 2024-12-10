@@ -47,7 +47,7 @@ public class InstructionTable {
     tableView.setItems(data);
 
     tableView.setFixedCellSize(25);
-    tableView.setPrefHeight(25 * data.size() + 30);
+    tableView.setPrefHeight(25 * 5 + 30);
 
     tableView.setPrefWidth(Double.MAX_VALUE);
 
