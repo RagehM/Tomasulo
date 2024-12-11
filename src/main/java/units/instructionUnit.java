@@ -6,6 +6,7 @@ import gui.setupStage.InstructionSetup;
 import instructions.FloatingInstruction;
 import instructions.Instruction;
 import instructions.IntegerInstruction;
+import units.stage.Stage;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.FloatingAdderStage;
@@ -129,23 +130,43 @@ public class instructionUnit {
     Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
     String operation = getInstructionOperation(instruction);
     if(operation.equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
-      LoadStage loadstage = loadTable.get(reservedLoad);
+      //Check if the load must wait for a store
+      if(LoadStage.checkAddressClash(instruction)) {
+    	  //Stall the issuing if a clash is detected
+    	  return;	
+      }
+      int firstUnusedIndex = Stage.getFirstEmptySlot(loadTable);
+      LoadStage loadstage = loadTable.get(firstUnusedIndex);
+      //Replace in load RS
       loadstage.setBusy(true);
       loadstage.setAddress(instruction.getOperand1());
-      loadTable.remove(reservedLoad);
-      loadTable.add(reservedLoad, loadstage);
+      loadTable.remove(firstUnusedIndex);
+      loadTable.add(firstUnusedIndex, loadstage);
+      //Update RF Dependency
       updateRegister(instruction.getDestination(), loadstage);
+      //Update Instruction Table Entry
       instructionTable.remove(lastInstructionIndex);
       instruction.setIssue(cycle + 1);
       instructionTable.add(lastInstructionIndex, instruction);
       reservedLoad++;
     }
     else if(operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
-      StoreStage storeStage = storeTable.get(reservedStore);
+      //check for if the store must wait for a load or a store
+      if(StoreStage.checkAddressClash(instruction)) {
+    	  //Stall the issuing if a clash is detected
+    	  return;
+      }
+      int firstUnusedIndex = Stage.getFirstEmptySlot(storeTable);
+      StoreStage storeStage = storeTable.get(firstUnusedIndex);
+      //Replace in load RS
       storeStage.setBusy(true);
       storeStage.setAddress(instruction.getOperand1());
-      storeTable.remove(reservedStore);
-      storeTable.add(reservedStore, storeStage);
+      storeTable.remove(firstUnusedIndex);
+      storeTable.add(firstUnusedIndex, storeStage);
+      //Update Instruction Table Entry
+      instructionTable.remove(lastInstructionIndex);
+      instruction.setIssue(cycle + 1);
+      instructionTable.add(lastInstructionIndex, instruction);
       reservedStore++;
     }
     else if (operation.equals("ADD") || operation.equals("SUB") && reservedAdder < AluSetup.getFloatingAdder()) {

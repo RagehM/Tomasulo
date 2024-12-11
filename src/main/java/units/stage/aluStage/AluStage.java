@@ -4,20 +4,11 @@ import units.RegisterFile;
 import units.stage.Stage;
 
 public class AluStage extends Stage {
-  private Boolean busy;
   private String op;
   private RegisterFile Vj;
   private RegisterFile Vk;
   private Stage Qj;
   private Stage Qk;
-
-  public Boolean getBusy() {
-    return busy;
-  }
-
-  public void setBusy(Boolean busy) {
-    this.busy = busy;
-  }
 
   public String getOp() {
     return op;
