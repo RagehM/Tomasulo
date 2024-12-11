@@ -151,17 +151,21 @@ public class instructionUnit {
 	public static void dispatch() {
 		Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
 		String operation = getInstructionOperation(instruction);
+		System.out.println(reservedAdder < AluSetup.getFloatingAdder());
 		if (operation.equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
 			LoadStage.dispatchLoad(instruction);
 		}
 		else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
 			StoreStage.dispatchStore(instruction);
 		}
-		else if (operation.equals("ADD") || operation.equals("SUB") && reservedAdder < AluSetup.getFloatingAdder()) {
+		else if ( (operation.equals("ADD") || operation.equals("SUB") ) && reservedAdder < AluSetup.getFloatingAdder()) {
 			FloatingAdderStage.dispatchAdder(instruction, operation);
 		}
-		else if (operation.equals("MUL") || operation.equals("DIV") && reservedMultiply < AluSetup.getFloatingAdder()) {
+		else if ( (operation.equals("MUL") || operation.equals("DIV") ) && reservedMultiply < AluSetup.getFloatingMul()) {
 			FloatingMultiplyStage.dispatchMultiply(instruction, operation);
+		}
+		else {
+			return;
 		}
 		lastInstructionIndex++;
 	}
@@ -283,10 +287,15 @@ public class instructionUnit {
 
 			if (busWriter instanceof LoadStage) {
 				value = ((LoadStage) busWriter).produce();
-			} else if (busWriter instanceof FloatingAdderStage) {
+				reservedLoad--;
+			}
+			else if (busWriter instanceof FloatingAdderStage) {
 				value = ((FloatingAdderStage) busWriter).produce();
-			} else {
+				reservedAdder--;
+			}
+			else {
 				value = ((FloatingMultiplyStage) busWriter).produce();
+				reservedMultiply--;
 			}
 
 			for (int i = 0; i < floatRegisterTable.size(); i++) {
