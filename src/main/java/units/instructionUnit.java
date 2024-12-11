@@ -185,7 +185,7 @@ public class instructionUnit {
 			// Replace in load RS
 			storeStage.setBusy(true);
 			storeStage.setAddress(instruction.getOperand1());
-			RegisterFile destinationRegister = getRegister(instruction.getOperand2());
+			RegisterFile destinationRegister = getRegister(instruction.getDestination());
 			float destinationValue = destinationRegister.getContent();
 			if (destinationRegister.getQi() == null) {
 				storeStage.setV((int) destinationValue);
@@ -362,6 +362,8 @@ public class instructionUnit {
 		// Update RF and RS with the first stage from the queue
 		if (writebackQueue.size() != 0) {
 			Stage busWriter = writebackQueue.remove();
+			busWriter.setBusy(false);
+			busWriter.setExecutionCycle(busWriter.getExecutionCycle() + 10);
 			// Update instruction table
 			Instruction instruction = instructionTable.get(busWriter.getInstructionIndex());
 			instruction.setWriteResult(cycle + 1);
