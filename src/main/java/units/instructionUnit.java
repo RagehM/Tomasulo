@@ -152,107 +152,16 @@ public class instructionUnit {
 		Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
 		String operation = getInstructionOperation(instruction);
 		if (getInstructionOperation(instruction).equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
-			// Check if the load must wait for a store
-			if (LoadStage.checkAddressClash(instruction)) {
-				// Stall the issuing if a clash is detected
-				return;
-			}
-			int firstUnusedIndex = Stage.getFirstEmptySlot(loadTable);
-			LoadStage loadstage = loadTable.get(firstUnusedIndex);
-			// Replace in load RS
-			loadstage.setBusy(true);
-			loadstage.setAddress(instruction.getOperand1());
-			loadstage.setIssueCycle(cycle + 1);
-			loadstage.setInstructionIndex(lastInstructionIndex);
-			System.out.println(lastInstructionIndex);
-			loadTable.remove(firstUnusedIndex);
-			loadTable.add(firstUnusedIndex, loadstage);
-			// Update RF Dependency
-			updateRegister(instruction.getDestination(), loadstage);
-			// Update Instruction Table Entry
-			instructionTable.remove(lastInstructionIndex);
-			instruction.setIssue(cycle + 1);
-			instructionTable.add(lastInstructionIndex, instruction);
-			reservedLoad++;
-		} else if (getInstructionOperation(instruction).equals("store") && reservedStore < AddressSetup.getStoreSize()) {
-			// check for if the store must wait for a load or a store
-			if (StoreStage.checkAddressClash(instruction)) {
-				// Stall the issuing if a clash is detected
-				return;
-			}
-			int firstUnusedIndex = Stage.getFirstEmptySlot(storeTable);
-			StoreStage storeStage = storeTable.get(firstUnusedIndex);
-			// Replace in load RS
-			storeStage.setBusy(true);
-			storeStage.setAddress(instruction.getOperand1());
-			RegisterFile destinationRegister = getRegister(instruction.getDestination());
-			float destinationValue = destinationRegister.getContent();
-			if (destinationRegister.getQi() == null) {
-				storeStage.setV((int) destinationValue);
-			} else {
-				storeStage.setQ(destinationRegister.getQi());
-			}
-			storeStage.setIssueCycle(cycle + 1);
-			storeStage.setInstructionIndex(lastInstructionIndex);
-			storeTable.remove(firstUnusedIndex);
-			storeTable.add(firstUnusedIndex, storeStage);
-			// Update Instruction Table Entry
-			instructionTable.remove(lastInstructionIndex);
-			instruction.setIssue(cycle + 1);
-			instructionTable.add(lastInstructionIndex, instruction);
-			reservedStore++;
-		} else if (operation.equals("ADD") || operation.equals("SUB") && reservedAdder < AluSetup.getFloatingAdder()) {
-			FloatingAdderStage adderStage = adderTable.get(reservedAdder);
-			adderStage.setBusy(true);
-			adderStage.setOp(operation);
-			RegisterFile operandRegister1 = getRegister(instruction.getOperand2());
-			float operandValue1 = operandRegister1.getContent();
-			if (operandRegister1.getQi() == null) {
-				adderStage.setVj(operandValue1);
-			} else {
-				adderStage.setQj(operandRegister1.getQi());
-			}
-			RegisterFile operandRegister2 = getRegister(instruction.getOperand2());
-			float operandValue2 = operandRegister2.getContent();
-			if (operandRegister2.getQi() == null) {
-				adderStage.setVk(operandValue2);
-			} else {
-				adderStage.setQk(operandRegister2.getQi());
-			}
-			adderStage.setIssueCycle(cycle + 1);
-			adderStage.setInstructionIndex(lastInstructionIndex);
-			RegisterFile destinationRegister = getRegister(instruction.getDestination());
-			updateRegister(instruction.getDestination(), adderStage);
-			adderTable.remove(reservedAdder);
-			instruction.setIssue(cycle + 1);
-			adderTable.add(reservedAdder, adderStage);
-			reservedAdder++;
-		} else if (operation.equals("MUL") || operation.equals("DIV") && reservedMultiply < AluSetup.getFloatingAdder()) {
-			FloatingMultiplyStage multiplyStage = multiplyTable.get(reservedMultiply);
-			multiplyStage.setBusy(true);
-			multiplyStage.setOp(operation);
-			RegisterFile operandRegister1 = getRegister(instruction.getOperand2());
-			float operandValue1 = operandRegister1.getContent();
-			if (operandRegister1.getQi() == null) {
-				multiplyStage.setVj(operandValue1);
-			} else {
-				multiplyStage.setQj(operandRegister1.getQi());
-			}
-			RegisterFile operandRegister2 = getRegister(instruction.getOperand2());
-			float operandValue2 = operandRegister2.getContent();
-			if (operandRegister2.getQi() == null) {
-				multiplyStage.setVk(operandValue2);
-			} else {
-				multiplyStage.setQk(operandRegister2.getQi());
-			}
-			multiplyStage.setIssueCycle(cycle + 1);
-			multiplyStage.setInstructionIndex(lastInstructionIndex);
-			RegisterFile destinationRegister = getRegister(instruction.getDestination());
-			updateRegister(instruction.getDestination(), multiplyStage);
-			adderTable.remove(reservedMultiply);
-			instruction.setIssue(cycle + 1);
-			multiplyTable.add(reservedMultiply, multiplyStage);
-			reservedMultiply++;
+			LoadStage.dispatchLoad(instruction);
+		}
+		else if (getInstructionOperation(instruction).equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+			StoreStage.dispatchStore(instruction);
+		}
+		else if (operation.equals("ADD") || operation.equals("SUB") && reservedAdder < AluSetup.getFloatingAdder()) {
+			FloatingAdderStage.dispatchAdder(instruction, operation);
+		}
+		else if (operation.equals("MUL") || operation.equals("DIV") && reservedMultiply < AluSetup.getFloatingAdder()) {
+			FloatingMultiplyStage.dispatchMultiply(instruction, operation);
 		}
 		lastInstructionIndex++;
 	}
@@ -363,6 +272,7 @@ public class instructionUnit {
 		if (writebackQueue.size() != 0) {
 			Stage busWriter = writebackQueue.remove();
 			busWriter.setBusy(false);
+			System.out.println(busWriter.getBusy());
 			busWriter.setExecutionCycle(busWriter.getExecutionCycle() + 10);
 			// Update instruction table
 			Instruction instruction = instructionTable.get(busWriter.getInstructionIndex());
