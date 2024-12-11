@@ -1,9 +1,7 @@
 package units;
 
 import static gui.simulatingStage.Simulate.cycle;
-import static units.RegisterFile.getRegister;
-import static units.RegisterFile.registerTable;
-import static units.RegisterFile.updateRegister;
+import static units.FloatRegister.floatRegisterTable;
 import static units.stage.Stage.adderTable;
 import static units.stage.Stage.loadTable;
 import static units.stage.Stage.multiplyTable;
@@ -127,7 +125,8 @@ public class instructionUnit {
 					if (type.equals("floating")) {
 						instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], "",
 								InstructionSetup.getMemoryLatency());
-					} else if (type.equals("integer")) {
+					}
+					else if (type.equals("integer")) {
 						instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], "",
 								InstructionSetup.getMemoryLatency());
 					}
@@ -135,7 +134,8 @@ public class instructionUnit {
 					if (type.equals("floating")) {
 						instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 								InstructionSetup.getFloatingLatency());
-					} else if (type.equals("integer")) {
+					}
+					else if (type.equals("integer")) {
 						instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 								InstructionSetup.getIntegerLatency());
 					}
@@ -151,10 +151,10 @@ public class instructionUnit {
 	public static void dispatch() {
 		Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
 		String operation = getInstructionOperation(instruction);
-		if (getInstructionOperation(instruction).equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
+		if (operation.equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
 			LoadStage.dispatchLoad(instruction);
 		}
-		else if (getInstructionOperation(instruction).equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+		else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
 			StoreStage.dispatchStore(instruction);
 		}
 		else if (operation.equals("ADD") || operation.equals("SUB") && reservedAdder < AluSetup.getFloatingAdder()) {
@@ -289,8 +289,8 @@ public class instructionUnit {
 				value = ((FloatingMultiplyStage) busWriter).produce();
 			}
 
-			for (int i = 0; i < registerTable.size(); i++) {
-				RegisterFile register = registerTable.get(i);
+			for (int i = 0; i < floatRegisterTable.size(); i++) {
+				FloatRegister register = floatRegisterTable.get(i);
 				// Check the name of the consumed stage
 				if (busWriter.equals(register.getQi())) {
 					register.setQi(null);

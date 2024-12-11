@@ -1,5 +1,6 @@
 package gui.setupStage;
 
+import gui.simulatingStage.IntegerRegisterTable;
 import gui.simulatingStage.SimulatingStage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,12 +10,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import units.Cache;
-import units.RegisterFile;
+import units.FloatRegister;
+import units.IntegerRegister;
 import units.instructionUnit;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
+
+import static units.IntegerRegister.integerRegisterTable;
 
 public class SetupStage {
 	public static Stage setupMainStage() {
@@ -38,7 +42,8 @@ public class SetupStage {
 			Cache cache = new Cache(CacheSetup.getLatency(), CacheSetup.getMissPenalty(), CacheSetup.getCacheSize(),
 					CacheSetup.getBlockSize());
 
-			RegisterFile.initRegisterFile();
+			FloatRegister.initRegisterFile();
+			IntegerRegister.initRegisterFile();
 
 			for (int i = 0; i < AddressSetup.getLoadSize(); i++) {
 				new LoadStage(false, "");
@@ -58,7 +63,7 @@ public class SetupStage {
 
 			Stage simStage = SimulatingStage.setupSimulatingStage(instructionUnit.instructionTable,
 					units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable,
-					units.stage.Stage.multiplyTable);
+					units.stage.Stage.multiplyTable, integerRegisterTable);
 			simStage.show();
 			stage.hide();
 		});

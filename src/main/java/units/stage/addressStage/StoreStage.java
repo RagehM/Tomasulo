@@ -1,11 +1,11 @@
 package units.stage.addressStage;
 
 import instructions.Instruction;
-import units.RegisterFile;
+import units.FloatRegister;
 import units.stage.Stage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import static units.RegisterFile.getRegister;
+import static units.FloatRegister.getRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
 public class StoreStage extends AddressStage {
@@ -61,7 +61,7 @@ public class StoreStage extends AddressStage {
 		storeStage.setBusy(true);
 		storeStage.setAddress(instruction.getOperand1());
 
-		RegisterFile destinationRegister = getRegister(instruction.getDestination());
+		FloatRegister destinationRegister = getRegister(instruction.getDestination());
 		float destinationValue = destinationRegister.getContent();
 
 		//check if the destination Register does not depend on any stage

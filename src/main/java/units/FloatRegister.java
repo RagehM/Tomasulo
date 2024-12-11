@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import units.stage.Stage;
 
-public class RegisterFile {
+public class FloatRegister {
 	private String register;
 	private static int number = 0;
 	private Stage Qi;
 	private float content;
-	public static ArrayList<RegisterFile> registerTable = new ArrayList<RegisterFile>();
+	public static ArrayList<FloatRegister> floatRegisterTable = new ArrayList<FloatRegister>();
 
 	public String getRegister() {
 		return register;
@@ -35,12 +35,12 @@ public class RegisterFile {
 		this.content = content;
 	}
 
-	public RegisterFile(Stage qi, float content) {
+	public FloatRegister(Stage qi, float content) {
 		this.Qi = qi;
 		this.content = content;
 		this.register = "F" + number;
 		number++;
-		registerTable.add(this);
+		floatRegisterTable.add(this);
 	}
 
 	public String toString() {
@@ -49,22 +49,22 @@ public class RegisterFile {
 
 	public static void initRegisterFile() {
 		for (int i = 0; i < 32; i++) {
-			new RegisterFile(null, i);
+			new FloatRegister(null, i);
 		}
 	}
 
-	public static RegisterFile getRegister(String registerName) {
-		for (int i = 0; i < registerTable.size(); i++) {
-			if (registerName.equals(registerTable.get(i).getRegister())) {
-				return registerTable.get(i);
+	public static FloatRegister getRegister(String registerName) {
+		for (int i = 0; i < floatRegisterTable.size(); i++) {
+			if (registerName.equals(floatRegisterTable.get(i).getRegister())) {
+				return floatRegisterTable.get(i);
 			}
 		}
 		return null;
 	}
 
 	public static int getRegisterIndex(String registerName) {
-		for (int i = 0; i < registerTable.size(); i++) {
-			if (registerName.equals(registerTable.get(i).getRegister())) {
+		for (int i = 0; i < floatRegisterTable.size(); i++) {
+			if (registerName.equals(floatRegisterTable.get(i).getRegister())) {
 				return i;
 			}
 		}
@@ -72,13 +72,12 @@ public class RegisterFile {
 	}
 
 	public static void updateRegister(String registerName, Stage stage) {
-		RegisterFile register = getRegister(registerName);
+		FloatRegister register = getRegister(registerName);
 		int registerIndex = getRegisterIndex(registerName);
 		if (register != null && registerIndex != -1) {
 			register.setQi(stage);
-			registerTable.remove(registerIndex);
-			System.out.println(register.toString());
-			registerTable.add(registerIndex, register);
+			floatRegisterTable.remove(registerIndex);
+			floatRegisterTable.add(registerIndex, register);
 		}
 	}
 }

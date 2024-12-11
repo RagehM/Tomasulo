@@ -1,12 +1,12 @@
 package units.stage.aluStage;
 
 import instructions.Instruction;
-import units.RegisterFile;
+import units.FloatRegister;
 import units.stage.Stage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import static units.RegisterFile.getRegister;
-import static units.RegisterFile.updateRegister;
+import static units.FloatRegister.getRegister;
+import static units.FloatRegister.updateRegister;
 import static units.instructionUnit.lastInstructionIndex;
 public class FloatingAdderStage extends AluStage {
 	private String stage;
@@ -38,7 +38,7 @@ public class FloatingAdderStage extends AluStage {
 		adderStage.setBusy(true);
 		adderStage.setOp(operation);
 
-		RegisterFile operandRegister1 = getRegister(instruction.getOperand1());
+		FloatRegister operandRegister1 = getRegister(instruction.getOperand1());
 		float operandValue1 = operandRegister1.getContent();
 
 		// check if that register does not depend on any other stage
@@ -51,7 +51,7 @@ public class FloatingAdderStage extends AluStage {
 			adderStage.setQj(operandRegister1.getQi());
 		}
 
-		RegisterFile operandRegister2 = getRegister(instruction.getOperand2());
+		FloatRegister operandRegister2 = getRegister(instruction.getOperand2());
 		float operandValue2 = operandRegister2.getContent();
 		// check if that register does not depend on any other stage
 		if (operandRegister2.getQi() == null) {

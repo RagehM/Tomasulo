@@ -4,7 +4,7 @@ import instructions.Instruction;
 import units.stage.Stage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import static units.RegisterFile.updateRegister;
+import static units.FloatRegister.updateRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
 public class LoadStage extends AddressStage {

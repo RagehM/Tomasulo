@@ -10,17 +10,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import units.instructionUnit;
+import units.IntegerRegister;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
-import units.stage.aluStage.AluStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
 
 import java.util.ArrayList;
 
 public class SimulatingStage {
-  public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable, ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable, ArrayList<FloatingMultiplyStage> floatingMultiplyTable) {
+  public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable, ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable, ArrayList<FloatingMultiplyStage> floatingMultiplyTable, ArrayList<IntegerRegister> integerRegisterTable) {
     Stage stage = new Stage();
     BorderPane borderPane = new BorderPane();
     Scene scene = new Scene(borderPane, 1500, 600);
@@ -40,10 +39,15 @@ public class SimulatingStage {
     storeBox.setPrefWidth(400);
     storeBox.setPadding(new Insets(10, 10, 10, 10));
 
-    VBox registerBox = RegisterTable.createTable();
-    registerBox.setAlignment(Pos.TOP_RIGHT);
-    registerBox.setPrefWidth(400);
-    registerBox.setPadding(new Insets(10, 10, 10, 10));
+    VBox floatRegisterBox = FloatRegisterTable.createTable();
+    floatRegisterBox.setAlignment(Pos.TOP_RIGHT);
+    floatRegisterBox.setPrefWidth(400);
+    floatRegisterBox.setPadding(new Insets(10, 10, 10, 10));
+
+    VBox integerRegisterBox = IntegerRegisterTable.createTable();
+    integerRegisterBox.setAlignment(Pos.TOP_RIGHT);
+    integerRegisterBox.setPrefWidth(400);
+    integerRegisterBox.setPadding(new Insets(10, 10, 10, 10));
 
     VBox FloatingAdderBox = AluTable.createTable(floatingAdderTable, AluSetup.getFloatingAdder(), "adder");
     FloatingAdderBox.setAlignment(Pos.CENTER_RIGHT);
@@ -68,10 +72,14 @@ public class SimulatingStage {
 
 //    Button prevCycle = new Button("<- Prev Cycle"); // eh2 eh2 eh2
 
+    HBox topRightPane = new HBox(10,floatRegisterBox, integerRegisterBox);
+    topRightPane.setAlignment(Pos.TOP_RIGHT);
+    topRightPane.setPadding(new Insets(10));
+
     VBox leftPane = new VBox(10, instructionBox, loadBox, storeBox);
     leftPane.setPadding(new Insets(10));
 
-    VBox rightPane = new VBox(10, registerBox, FloatingAdderBox, FloatingMultiplyBox);
+    VBox rightPane = new VBox(10, topRightPane, FloatingAdderBox, FloatingMultiplyBox);
     rightPane.setPadding(new Insets(10));
 
     HBox bottomPane = new HBox(10, nextCycle);

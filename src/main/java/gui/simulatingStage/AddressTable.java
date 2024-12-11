@@ -7,8 +7,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import units.RegisterFile;
-import units.stage.Stage;
 import units.stage.addressStage.AddressStage;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
