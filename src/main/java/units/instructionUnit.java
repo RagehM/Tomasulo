@@ -188,7 +188,7 @@ public class instructionUnit {
 			RegisterFile destinationRegister = getRegister(instruction.getOperand2());
 			float destinationValue = destinationRegister.getContent();
 			if (destinationRegister.getQi() == null) {
-				storeStage.setV("" + destinationValue);
+				storeStage.setV((int) destinationValue);
 			} else {
 				storeStage.setQ(destinationRegister.getQi());
 			}
@@ -387,15 +387,35 @@ public class instructionUnit {
 			}
 
 			for (int i = 0; i < storeTable.size(); i++) {
-
+				StoreStage stage = storeTable.get(i);
+				if (busWriter.equals(stage.getQ())) {
+					stage.setQ(null);
+					stage.setV((int) value);
+				}
 			}
 
 			for (int i = 0; i < adderTable.size(); i++) {
-
+				FloatingAdderStage stage = adderTable.get(i);
+				if (busWriter.equals(stage.getQj())) {
+					stage.setQj(null);
+					stage.setVj(value);
+				}
+				if (busWriter.equals(stage.getQk())) {
+					stage.setQk(null);
+					stage.setVk(value);
+				}
 			}
 
 			for (int i = 0; i < multiplyTable.size(); i++) {
-
+				FloatingMultiplyStage stage = multiplyTable.get(i);
+				if (busWriter.equals(stage.getQj())) {
+					stage.setQj(null);
+					stage.setVj(value);
+				}
+				if (busWriter.equals(stage.getQk())) {
+					stage.setQk(null);
+					stage.setVk(value);
+				}
 			}
 
 		}
