@@ -7,12 +7,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import units.instructionUnit;
+
+import java.util.ArrayList;
 
 public class InstructionTable {
-
-  public static VBox createTable(instructionUnit unit ) {
-    TableView<Instruction> tableView = new TableView<>();
+  public static TableView<Instruction> instructionTableView = new TableView<>();
+  public static VBox createTable(ArrayList<Instruction> unit ) {
 
     TableColumn<Instruction, String> operationCol = new TableColumn<>("operation");
     operationCol.setCellValueFactory(new PropertyValueFactory<>("operation"));
@@ -35,23 +35,23 @@ public class InstructionTable {
     TableColumn<Instruction, Integer> writeResultCol = new TableColumn<>("writeResult");
     writeResultCol.setCellValueFactory(new PropertyValueFactory<>("writeResult"));
 
-    tableView.getColumns().addAll(operationCol, destinationCol, operand1Col, operand2Col, issueCol, executionCompleteCol, writeResultCol);
+    instructionTableView.getColumns().addAll(operationCol, destinationCol, operand1Col, operand2Col, issueCol, executionCompleteCol, writeResultCol);
 
-    tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    instructionTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
     ObservableList<Instruction> data = FXCollections.observableArrayList();
-    for (int i = 0; i < unit.instructionTable.size(); i++) {
-      data.add((Instruction) unit.instructionTable.get(i));
+    for (int i = 0; i < unit.size(); i++) {
+      data.add((Instruction) unit.get(i));
     }
 
-    tableView.setItems(data);
+    instructionTableView.setItems(data);
 
-    tableView.setFixedCellSize(25);
-    tableView.setPrefHeight(25 * 5 + 30);
+    instructionTableView.setFixedCellSize(25);
+    instructionTableView.setPrefHeight(25 * 5 + 30);
 
-    tableView.setPrefWidth(Double.MAX_VALUE);
+    instructionTableView.setPrefWidth(Double.MAX_VALUE);
 
-    VBox vbox = new VBox(tableView);
+    VBox vbox = new VBox(instructionTableView);
     vbox.setFillWidth(true);
 
     return vbox;

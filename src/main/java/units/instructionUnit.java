@@ -1,18 +1,27 @@
 package units;
 
+import gui.setupStage.AddressSetup;
 import gui.setupStage.InstructionSetup;
 import instructions.FloatingInstruction;
 import instructions.Instruction;
 import instructions.IntegerInstruction;
+import units.stage.addressStage.LoadStage;
+import units.stage.addressStage.StoreStage;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.io.*;
 
-public class instructionUnit {
+import static gui.simulatingStage.Simulate.cycle;
+import static units.RegisterFile.updateRegister;
+import static units.stage.Stage.*;
 
-  private Queue<Instruction> instructionQueue = new LinkedList<>();
-  public ArrayList instructionTable = new ArrayList<Instruction>();
+public class instructionUnit {
+  public static int lastInstructionIndex = 0;
+
+  public Queue<Instruction> instructionQueue = new LinkedList<>();
+  public static ArrayList<Instruction> instructionTable = new ArrayList<Instruction>();
 
   public void addInstruction(Instruction instruction) {
     instructionTable.add(instruction);
@@ -50,6 +59,18 @@ public class instructionUnit {
     }
   }
 
+  private static String getInstructionOperation(Instruction instruction) {
+    if(instruction instanceof IntegerInstruction) {
+      if(((IntegerInstruction) instruction).getOperation().equals("LW") ||((IntegerInstruction) instruction).getOperation().equals("LD") ||((IntegerInstruction) instruction).getOperation().equals("L.S") || ((IntegerInstruction) instruction).getOperation().equals("L.D")) {
+        return "load";
+      }
+      if(((IntegerInstruction) instruction).getOperation().equals("SW") ||((IntegerInstruction) instruction).getOperation().equals("SD") ||((IntegerInstruction) instruction).getOperation().equals("S.S") || ((IntegerInstruction) instruction).getOperation().equals("S.D")) {
+        return "store";
+      }
+    }
+    return "not found";
+  }
+
   public void parse() {
     String filePath = "./src/main/java/instructions.txt";
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -77,5 +98,30 @@ public class instructionUnit {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public static void dispatch() {
+    Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
+    if(getInstructionOperation(instruction).equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
+      LoadStage loadstage = loadTable.get(reservedLoad);
+      loadstage.setBusy(true);
+      loadstage.setAddress(instruction.getOperand1());
+      loadTable.remove(reservedLoad);
+      loadTable.add(reservedLoad, loadstage);
+      updateRegister(instruction.getDestination(), loadstage);
+      instructionTable.remove(lastInstructionIndex);
+      instruction.setIssue(cycle + 1);
+      instructionTable.add(lastInstructionIndex, instruction);
+      reservedLoad++;
+    }
+    else if(getInstructionOperation(instruction).equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+      StoreStage storeStage = storeTable.get(reservedStore);
+      storeStage.setBusy(true);
+      storeStage.setAddress(instruction.getOperand1());
+      storeTable.remove(reservedStore);
+      storeTable.add(reservedStore, storeStage);
+      reservedStore++;
+    }
+    lastInstructionIndex++;
   }
 }

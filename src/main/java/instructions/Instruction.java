@@ -80,6 +80,6 @@ public class Instruction {
   }
 
   public String toString() {
-    return destination + " " + operand1 + " " + operand2 + " " + type;
+    return destination + " " + operand1 + " " + operand2 + " " + + issue + " " + executionComplete + " " + writeResult + " " + type ;
   }
 }

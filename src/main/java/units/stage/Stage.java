@@ -12,10 +12,12 @@ public class Stage {
   public static ArrayList<StoreStage> storeTable = new ArrayList();
   public static ArrayList<FloatingAdderStage> adderTable = new ArrayList();
   public static ArrayList<FloatingMultiplyStage> multiplyTable = new ArrayList();
+  public static int reservedLoad = 0;
+  public static int reservedStore = 0;
   public Stage() {
   }
 
-  public static String printTable(ArrayList<? extends Stage> table) {
+  public static String toString(ArrayList<? extends Stage> table) {
     String result = "";
     for(int i = 0; i < table.size(); i++) {
       System.out.println(table.get(i).toString());

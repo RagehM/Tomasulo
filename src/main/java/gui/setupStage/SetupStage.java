@@ -55,7 +55,7 @@ public class SetupStage {
         new FloatingMultiplyStage(false, "", null,null,null,null);
       }
 
-      Stage simStage = SimulatingStage.setupSimulatingStage(instUnit, units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable, units.stage.Stage.multiplyTable);
+      Stage simStage = SimulatingStage.setupSimulatingStage(instructionUnit.instructionTable, units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable, units.stage.Stage.multiplyTable);
       simStage.show();
       stage.hide();
     });

@@ -43,9 +43,42 @@ public class RegisterFile {
     registerTable.add(this);
   }
 
+  public String toString() {
+    return this.register + " "  + this.Qi + this.content;
+  }
+
   public static void initRegisterFile() {
     for (int i = 0; i < 32; i++) {
       new RegisterFile(null, "");
+    }
+  }
+
+  public static RegisterFile getRegister(String registerName) {
+    for(int i = 0; i < registerTable.size(); i++) {
+      if(registerName.equals(registerTable.get(i).getRegister())) {
+        return registerTable.get(i);
+      }
+    }
+    return null;
+  }
+
+  public static int getRegisterIndex(String registerName) {
+    for(int i = 0; i < registerTable.size(); i++) {
+      if(registerName.equals(registerTable.get(i).getRegister())) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  public static void updateRegister(String registerName, Stage stage) {
+    RegisterFile register = getRegister(registerName);
+    int registerIndex = getRegisterIndex(registerName);
+    if(register != null && registerIndex != -1) {
+      register.setQi(stage);
+      registerTable.remove(registerIndex);
+      System.out.println(register.toString());
+      registerTable.add(registerIndex, register);
     }
   }
 }
