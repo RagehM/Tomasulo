@@ -5,6 +5,7 @@ import gui.setupStage.InstructionSetup;
 import instructions.FloatingInstruction;
 import instructions.Instruction;
 import instructions.IntegerInstruction;
+import units.stage.Stage;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 
@@ -103,11 +104,12 @@ public class instructionUnit {
   public static void dispatch() {
     Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
     if(getInstructionOperation(instruction).equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
-      LoadStage loadstage = loadTable.get(reservedLoad);
+      int firstUnusedIndex = Stage.getFirstEmptySlot(loadTable);
+      LoadStage loadstage = loadTable.get(firstUnusedIndex);
       loadstage.setBusy(true);
       loadstage.setAddress(instruction.getOperand1());
-      loadTable.remove(reservedLoad);
-      loadTable.add(reservedLoad, loadstage);
+      loadTable.remove(firstUnusedIndex);
+      loadTable.add(firstUnusedIndex, loadstage);
       updateRegister(instruction.getDestination(), loadstage);
       instructionTable.remove(lastInstructionIndex);
       instruction.setIssue(cycle + 1);
@@ -115,11 +117,12 @@ public class instructionUnit {
       reservedLoad++;
     }
     else if(getInstructionOperation(instruction).equals("store") && reservedStore < AddressSetup.getStoreSize()) {
-      StoreStage storeStage = storeTable.get(reservedStore);
+      int firstUnusedIndex = Stage.getFirstEmptySlot(storeTable);
+      StoreStage storeStage = storeTable.get(firstUnusedIndex);
       storeStage.setBusy(true);
       storeStage.setAddress(instruction.getOperand1());
-      storeTable.remove(reservedStore);
-      storeTable.add(reservedStore, storeStage);
+      storeTable.remove(firstUnusedIndex);
+      storeTable.add(firstUnusedIndex, storeStage);
       reservedStore++;
     }
     lastInstructionIndex++;
