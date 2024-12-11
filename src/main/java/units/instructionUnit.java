@@ -1,12 +1,15 @@
 package units;
 
 import gui.setupStage.AddressSetup;
+import gui.setupStage.AluSetup;
 import gui.setupStage.InstructionSetup;
 import instructions.FloatingInstruction;
 import instructions.Instruction;
 import instructions.IntegerInstruction;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
+import units.stage.aluStage.FloatingAdderStage;
+import units.stage.aluStage.FloatingMultiplyStage;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,6 +17,7 @@ import java.util.Queue;
 import java.io.*;
 
 import static gui.simulatingStage.Simulate.cycle;
+import static units.RegisterFile.getRegister;
 import static units.RegisterFile.updateRegister;
 import static units.stage.Stage.*;
 
@@ -61,11 +65,32 @@ public class instructionUnit {
 
   private static String getInstructionOperation(Instruction instruction) {
     if(instruction instanceof IntegerInstruction) {
-      if(((IntegerInstruction) instruction).getOperation().equals("LW") ||((IntegerInstruction) instruction).getOperation().equals("LD") ||((IntegerInstruction) instruction).getOperation().equals("L.S") || ((IntegerInstruction) instruction).getOperation().equals("L.D")) {
+      if(((IntegerInstruction) instruction).getOperation().equals("LW") ||((IntegerInstruction) instruction).getOperation().equals("LD")) {
         return "load";
       }
-      if(((IntegerInstruction) instruction).getOperation().equals("SW") ||((IntegerInstruction) instruction).getOperation().equals("SD") ||((IntegerInstruction) instruction).getOperation().equals("S.S") || ((IntegerInstruction) instruction).getOperation().equals("S.D")) {
+      else if(((IntegerInstruction) instruction).getOperation().equals("SW") ||((IntegerInstruction) instruction).getOperation().equals("SD") ||((IntegerInstruction) instruction).getOperation().equals("S.S") || ((IntegerInstruction) instruction).getOperation().equals("S.D")) {
         return "store";
+      }
+    }
+    else if(instruction instanceof FloatingInstruction) {
+      String operation = ((FloatingInstruction) instruction).getOperation();
+      if(operation.equals("L.S") || (operation.equals("L.D"))) {
+        return "load";
+      }
+      else if(operation.equals("SW") || operation.equals("SD") || operation.equals("S.S") || operation.equals("S.D")) {
+        return "store";
+      }
+      if(operation.equals("ADD.D") || operation.equals("ADD.S")) {
+        return "ADD";
+      }
+      if(operation.equals("SUB.D") ||  operation.equals("SUB.S")) {
+        return "SUB";
+      }
+      if(operation.equals("MUL.D") || operation.equals("MUL.S")) {
+        return "MUL";
+      }
+      if(operation.equals("DIV.D") || operation.equals("DIV.S")) {
+        return "DIV";
       }
     }
     return "not found";
@@ -102,7 +127,8 @@ public class instructionUnit {
 
   public static void dispatch() {
     Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
-    if(getInstructionOperation(instruction).equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
+    String operation = getInstructionOperation(instruction);
+    if(operation.equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
       LoadStage loadstage = loadTable.get(reservedLoad);
       loadstage.setBusy(true);
       loadstage.setAddress(instruction.getOperand1());
@@ -114,13 +140,63 @@ public class instructionUnit {
       instructionTable.add(lastInstructionIndex, instruction);
       reservedLoad++;
     }
-    else if(getInstructionOperation(instruction).equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+    else if(operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
       StoreStage storeStage = storeTable.get(reservedStore);
       storeStage.setBusy(true);
       storeStage.setAddress(instruction.getOperand1());
       storeTable.remove(reservedStore);
       storeTable.add(reservedStore, storeStage);
       reservedStore++;
+    }
+    else if (operation.equals("ADD") || operation.equals("SUB") && reservedAdder < AluSetup.getFloatingAdder()) {
+      FloatingAdderStage adderStage = adderTable.get(reservedAdder);
+      adderStage.setBusy(true);
+      adderStage.setOp(operation);
+      RegisterFile operandRegister1 = getRegister(instruction.getOperand1());
+      if(operandRegister1.getQi() == null) {
+        adderStage.setVj(operandRegister1);
+      }
+      else {
+        adderStage.setQj(operandRegister1.getQi());
+      }
+      RegisterFile operandRegister2 = getRegister(instruction.getOperand2());
+      if(operandRegister2.getQi() == null) {
+        adderStage.setVk(operandRegister2);
+      }
+      else {
+        adderStage.setQk(operandRegister2.getQi());
+      }
+      RegisterFile destinationRegister = getRegister(instruction.getDestination());
+      updateRegister(instruction.getDestination(), adderStage);
+      adderTable.remove(reservedAdder);
+      instruction.setIssue(cycle + 1);
+      adderTable.add(reservedAdder, adderStage);
+      reservedAdder++;
+    }
+    else if(operation.equals("MUL") || operation.equals("DIV") && reservedMultiply < AluSetup.getFloatingAdder()) {
+      FloatingMultiplyStage multiplyStage = multiplyTable.get(reservedMultiply);
+      multiplyStage.setBusy(true);
+      multiplyStage.setOp(operation);
+      RegisterFile operandRegister1 = getRegister(instruction.getOperand1());
+      if(operandRegister1.getQi() == null) {
+        multiplyStage.setVj(operandRegister1);
+      }
+      else {
+        multiplyStage.setQj(operandRegister1.getQi());
+      }
+      RegisterFile operandRegister2 = getRegister(instruction.getOperand2());
+      if(operandRegister2.getQi() == null) {
+        multiplyStage.setVk(operandRegister2);
+      }
+      else {
+        multiplyStage.setQk(operandRegister2.getQi());
+      }
+      RegisterFile destinationRegister = getRegister(instruction.getDestination());
+      updateRegister(instruction.getDestination(), multiplyStage);
+      adderTable.remove(reservedMultiply);
+      instruction.setIssue(cycle + 1);
+      multiplyTable.add(reservedMultiply, multiplyStage);
+      reservedMultiply++;
     }
     lastInstructionIndex++;
   }

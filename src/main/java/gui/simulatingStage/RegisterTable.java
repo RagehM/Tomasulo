@@ -16,7 +16,7 @@ public class RegisterTable {
     TableColumn<RegisterFile, String> operationCol = new TableColumn<>("register");
     operationCol.setCellValueFactory(new PropertyValueFactory<>("register"));
 
-    TableColumn<RegisterFile, Stage> destinationCol = new TableColumn<>("Qi");
+    TableColumn<RegisterFile, String> destinationCol = new TableColumn<>("Qi");
     destinationCol.setCellValueFactory(new PropertyValueFactory<>("Qi"));
 
     TableColumn<RegisterFile, String> operand1Col = new TableColumn<>("content");

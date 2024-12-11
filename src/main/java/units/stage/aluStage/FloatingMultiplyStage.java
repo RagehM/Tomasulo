@@ -1,5 +1,6 @@
 package units.stage.aluStage;
 
+import units.RegisterFile;
 import units.stage.Stage;
 
 public class FloatingMultiplyStage extends AluStage {
@@ -10,7 +11,7 @@ public class FloatingMultiplyStage extends AluStage {
     return stage;
   }
 
-  public FloatingMultiplyStage(Boolean busy, String op, Stage Vj, Stage Vk, Stage Qj, Stage Qk) {
+  public FloatingMultiplyStage(Boolean busy, String op, RegisterFile Vj, RegisterFile Vk, Stage Qj, Stage Qk) {
     super(busy, op, Vj, Vk, Qj, Qk);
     this.stage = "M" + number;
     number++;
@@ -18,6 +19,6 @@ public class FloatingMultiplyStage extends AluStage {
   }
 
   public String toString() {
-    return this.stage + " " + super.toString();
+    return this.stage;
   }
 }

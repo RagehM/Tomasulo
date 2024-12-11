@@ -15,6 +15,6 @@ public class StoreStage extends AddressStage {
     storeTable.add(this);
   }
   public String toString() {
-    return this.stage + " " + super.toString();
+    return this.stage;
   }
 }

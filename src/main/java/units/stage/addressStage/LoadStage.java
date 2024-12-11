@@ -16,7 +16,7 @@ public class LoadStage extends AddressStage {
 	}
 
 	public String toString() {
-		return this.stage + " " + super.toString();
+		return this.stage;
 	}
 
 	private static void addToLoadTable(LoadStage loadStage) {

@@ -1,12 +1,13 @@
 package units.stage.aluStage;
 
+import units.RegisterFile;
 import units.stage.Stage;
 
 public class AluStage extends Stage {
   private Boolean busy;
   private String op;
-  private Stage Vj;
-  private Stage Vk;
+  private RegisterFile Vj;
+  private RegisterFile Vk;
   private Stage Qj;
   private Stage Qk;
 
@@ -26,19 +27,19 @@ public class AluStage extends Stage {
     this.op = op;
   }
 
-  public Stage getVj() {
+  public RegisterFile getVj() {
     return Vj;
   }
 
-  public void setVj(Stage vj) {
+  public void setVj(RegisterFile vj) {
     Vj = vj;
   }
 
-  public Stage getVk() {
+  public RegisterFile getVk() {
     return Vk;
   }
 
-  public void setVk(Stage vk) {
+  public void setVk(RegisterFile vk) {
     Vk = vk;
   }
 
@@ -58,7 +59,7 @@ public class AluStage extends Stage {
     Qk = qk;
   }
 
-  public AluStage(Boolean busy, String op, Stage Vj, Stage Vk, Stage Qj, Stage Qk) {
+  public AluStage(Boolean busy, String op, RegisterFile Vj, RegisterFile Vk, Stage Qj, Stage Qk) {
     this.busy = busy;
     this.op = op;
     this.Vj = Vj;

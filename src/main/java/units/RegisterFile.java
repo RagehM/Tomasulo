@@ -44,7 +44,7 @@ public class RegisterFile {
   }
 
   public String toString() {
-    return this.register + " "  + this.Qi + this.content;
+    return this.register;
   }
 
   public static void initRegisterFile() {

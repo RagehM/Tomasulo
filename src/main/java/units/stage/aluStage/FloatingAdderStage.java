@@ -1,5 +1,6 @@
 package units.stage.aluStage;
 
+import units.RegisterFile;
 import units.stage.Stage;
 
 public class FloatingAdderStage extends AluStage {
@@ -10,7 +11,7 @@ public class FloatingAdderStage extends AluStage {
     return stage;
   }
 
-  public FloatingAdderStage(Boolean busy, String op, Stage Vj, Stage Vk, Stage Qj, Stage Qk) {
+  public FloatingAdderStage(Boolean busy, String op, RegisterFile Vj, RegisterFile Vk, Stage Qj, Stage Qk) {
     super(busy, op, Vj, Vk, Qj, Qk);
     this.stage = "A" + number;
     number++;
@@ -18,7 +19,7 @@ public class FloatingAdderStage extends AluStage {
   }
 
   public String toString() {
-    return this.stage + " " + super.toString();
+    return this.stage;
   }
 
 }

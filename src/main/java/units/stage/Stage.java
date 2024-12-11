@@ -14,6 +14,8 @@ public class Stage {
   public static ArrayList<FloatingMultiplyStage> multiplyTable = new ArrayList();
   public static int reservedLoad = 0;
   public static int reservedStore = 0;
+  public static int reservedAdder = 0;
+  public static int reservedMultiply = 0;
   public Stage() {
   }
 
