@@ -17,6 +17,7 @@ public class Stage {
   public static int reservedAdder = 0;
   public static int reservedMultiply = 0;
   protected Boolean busy;
+  protected int cycleOfExecution = 0;
   public Stage() {
   }
   
@@ -27,6 +28,14 @@ public class Stage {
 
   public void setBusy(Boolean busy) {
     this.busy = busy;
+  }
+  
+  public int getExecutionCycle() {
+	  return cycleOfExecution;
+  }
+  
+  public void setExecutionCycle(int cycle) {
+	  this.cycleOfExecution = cycle;
   }
 
   public static String toString(ArrayList<? extends Stage> table) {
