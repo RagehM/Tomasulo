@@ -104,25 +104,43 @@ public class instructionUnit {
   public static void dispatch() {
     Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
     if(getInstructionOperation(instruction).equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
+      //Check if the load must wait for a store
+      if(LoadStage.checkAddressClash(instruction)) {
+    	  //Stall the issuing if a clash is detected
+    	  return;	
+      }
       int firstUnusedIndex = Stage.getFirstEmptySlot(loadTable);
       LoadStage loadstage = loadTable.get(firstUnusedIndex);
+      //Replace in load RS
       loadstage.setBusy(true);
       loadstage.setAddress(instruction.getOperand1());
       loadTable.remove(firstUnusedIndex);
       loadTable.add(firstUnusedIndex, loadstage);
+      //Update RF Dependency
       updateRegister(instruction.getDestination(), loadstage);
+      //Update Instruction Table Entry
       instructionTable.remove(lastInstructionIndex);
       instruction.setIssue(cycle + 1);
       instructionTable.add(lastInstructionIndex, instruction);
       reservedLoad++;
     }
     else if(getInstructionOperation(instruction).equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+      //check for if the store must wait for a load or a store
+      if(StoreStage.checkAddressClash(instruction)) {
+    	  //Stall the issuing if a clash is detected
+    	  return;
+      }
       int firstUnusedIndex = Stage.getFirstEmptySlot(storeTable);
       StoreStage storeStage = storeTable.get(firstUnusedIndex);
+      //Replace in load RS
       storeStage.setBusy(true);
       storeStage.setAddress(instruction.getOperand1());
       storeTable.remove(firstUnusedIndex);
       storeTable.add(firstUnusedIndex, storeStage);
+      //Update Instruction Table Entry
+      instructionTable.remove(lastInstructionIndex);
+      instruction.setIssue(cycle + 1);
+      instructionTable.add(lastInstructionIndex, instruction);
       reservedStore++;
     }
     lastInstructionIndex++;

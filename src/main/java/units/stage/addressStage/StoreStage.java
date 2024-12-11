@@ -1,5 +1,7 @@
 package units.stage.addressStage;
 
+import instructions.Instruction;
+
 public class StoreStage extends AddressStage {
   private String stage;
   private static int number = 1;
@@ -16,5 +18,22 @@ public class StoreStage extends AddressStage {
   }
   public String toString() {
     return this.stage + " " + super.toString();
+  }
+  
+  public static boolean checkAddressClash(Instruction instruction) {
+	  
+	  for(int i = 0; i < storeTable.size(); i++) {
+		  if(storeTable.get(i).getBusy() && storeTable.get(i).getAddress() == instruction.getOperand1()) {
+			  return true;
+		  }
+	  }
+	  
+	  for(int i = 0; i < loadTable.size(); i++) {
+		  if(loadTable.get(i).getBusy() && loadTable.get(i).getAddress() == instruction.getOperand1()) {
+			  return true;
+		  }
+	  }
+	  
+	  return false;
   }
 }
