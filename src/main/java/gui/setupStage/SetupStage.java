@@ -12,6 +12,7 @@ import units.Cache;
 import units.FloatRegister;
 import units.IntegerRegister;
 import units.instructionUnit;
+import static units.instructionUnit.printQueue;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.FloatingAdderStage;
@@ -36,6 +37,7 @@ public class SetupStage {
 		startButton.setOnAction(event -> {
 			instructionUnit instUnit = new instructionUnit();
 			instUnit.parse();
+			System.out.println(printQueue());
 
 			Cache cache = new Cache(CacheSetup.getLatency(), CacheSetup.getMissPenalty(), CacheSetup.getCacheSize(),
 					CacheSetup.getBlockSize());

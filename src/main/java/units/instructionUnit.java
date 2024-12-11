@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -34,34 +35,34 @@ import units.stage.aluStage.FloatingMultiplyStage;
 public class instructionUnit {
 	public static int lastInstructionIndex = 0;
 
-	public Queue<Instruction> instructionQueue = new LinkedList<>();
-	public static ArrayList<Instruction> instructionTable = new ArrayList<Instruction>();
-
-	private static PriorityQueue<Stage> writebackQueue = new PriorityQueue<Stage>();
-
-	public void addInstruction(Instruction instruction) {
-		instructionTable.add(instruction);
-	}
-
-	public ArrayList getInstructionTable() {
-		return instructionTable;
-	}
-
-	public void pushInstruction(Instruction instruction) {
-		instructionQueue.add(instruction);
-	}
-
-	public Instruction popInstruction() {
-		return instructionQueue.poll();
-	}
-
-	public int getSize() {
-		return instructionQueue.size();
-	}
-
-	public String printQueue() {
-		String result = "";
-		for (Instruction instruction : instructionQueue) {
+	public static Queue<Instruction> instructionQueue = new LinkedList<>();
+		public static ArrayList<Instruction> instructionTable = new ArrayList<Instruction>();
+	
+		private static PriorityQueue<Stage> writebackQueue = new PriorityQueue<Stage>();
+	
+		public void addInstruction(Instruction instruction) {
+			instructionTable.add(instruction);
+		}
+	
+		public ArrayList getInstructionTable() {
+			return instructionTable;
+		}
+	
+		public void pushInstruction(Instruction instruction) {
+			instructionQueue.add(instruction);
+		}
+	
+		public Instruction popInstruction() {
+			return instructionQueue.poll();
+		}
+	
+		public int getSize() {
+			return instructionQueue.size();
+		}
+	
+		public static String printQueue() {
+			String result = "";
+			for (Instruction instruction : instructionQueue) {
 			result += instruction.toString() + "\n";
 		}
 		return result;
@@ -73,7 +74,11 @@ public class instructionUnit {
 				|| operation.equals("ADD.S") || operation.equals("SUB.S") || operation.equals("MUL.S")
 				|| operation.equals("DIV.S")) {
 			return "floating";
-		} else {
+		}
+		else if(operation.equals("BNE") || operation.equals("BEQ")) {
+			return "branch";
+		}
+		else {
 			return "integer";
 		}
 	}
@@ -114,8 +119,9 @@ public class instructionUnit {
 	}
 
 	public void parse() {
+		HashMap<String, Integer> labels = new HashMap<String, Integer>();
 		String filePath = "./src/main/java/instructions.txt";
-		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath)))  {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] instruction = line.split(" ");
@@ -130,7 +136,35 @@ public class instructionUnit {
 						instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], "",
 								InstructionSetup.getMemoryLatency());
 					}
-				} else {
+				} 
+				else {
+					System.out.println(instruction[0].contains(":"));
+					if (instruction[0].contains(":")) {
+						type = getInstructionType(instruction[1]);
+						labels.put(instruction[0].substring(0, instruction[0].length() - 1), instructionTable.size());
+						System.out.println(labels.toString());
+						if (instruction.length == 4) {
+							if (type.equals("floating")) {
+								instruction1 = new FloatingInstruction(instruction[1], instruction[2], instruction[3], "",
+										InstructionSetup.getMemoryLatency());
+							}
+							else if (type.equals("integer")) {
+								instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], "",
+										InstructionSetup.getMemoryLatency());
+							}
+						}
+						else {
+							if (type.equals("floating")) {
+								instruction1 = new FloatingInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
+										InstructionSetup.getFloatingLatency());
+							}
+							else if (type.equals("integer")) {
+								instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
+										InstructionSetup.getIntegerLatency());
+							}
+						} 
+					}
+					else {
 					if (type.equals("floating")) {
 						instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 								InstructionSetup.getFloatingLatency());
@@ -139,10 +173,15 @@ public class instructionUnit {
 						instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 								InstructionSetup.getIntegerLatency());
 					}
+					else if(type.equals("branch")) {
+						instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], labels.get(instruction[3]) + "",
+								InstructionSetup.getIntegerLatency());
+					}
+					}
 				}
 				this.pushInstruction(instruction1);
 				this.addInstruction(instruction1);
-			}
+				}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
