@@ -7,6 +7,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import units.RegisterFile;
+import units.stage.Stage;
 import units.stage.addressStage.AddressStage;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
@@ -59,7 +61,13 @@ public class AddressTable {
             TableColumn<StoreStage, String> addressCol = new TableColumn<>("Address");
             addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
 
-            storeTableView.getColumns().addAll(stageCol, busyCol, addressCol);
+            TableColumn<StoreStage, String> VCol = new TableColumn<>("V");
+            VCol.setCellValueFactory(new PropertyValueFactory<>("V"));
+
+            TableColumn<StoreStage, String> QCol = new TableColumn<>("Q");
+            QCol.setCellValueFactory(new PropertyValueFactory<>("Q"));
+
+            storeTableView.getColumns().addAll(stageCol, busyCol, addressCol, VCol, QCol);
 
             storeTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 

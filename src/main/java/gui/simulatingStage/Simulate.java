@@ -9,8 +9,11 @@ public class Simulate {
 //		adderTable.get(0).setBusy(true);
 //		loadTable.get(0).setAddress("505");
 //		System.out.println(instructionTable.get(0).toString());
+		// w
+		execute();
 		if(lastInstructionIndex != instructionTable.size()){
 			dispatch();
 		}
+		cycle++;
 	}
 }

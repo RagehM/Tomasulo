@@ -49,7 +49,7 @@ public class RegisterFile {
 
   public static void initRegisterFile() {
     for (int i = 0; i < 32; i++) {
-      new RegisterFile(null, "");
+      new RegisterFile(null, "" + i);
     }
   }
 

@@ -18,6 +18,8 @@ public class Stage {
   public static int reservedMultiply = 0;
   protected Boolean busy;
   protected int cycleOfExecution = 0;
+  private int issueCycle = 0;
+  private int instructionIndex = 0;
   public Stage() {
   }
   
@@ -38,6 +40,15 @@ public class Stage {
 	  this.cycleOfExecution = cycle;
   }
 
+
+  public int getIssueCycle() {
+    return issueCycle;
+  }
+
+  public void setIssueCycle(int issueCycle) {
+    this.issueCycle = issueCycle;
+  }
+
   public static String toString(ArrayList<? extends Stage> table) {
     String result = "";
     for(int i = 0; i < table.size(); i++) {
@@ -54,5 +65,13 @@ public class Stage {
 	 }
 	 
 	 return -1;
+  }
+
+  public int getInstructionIndex() {
+    return instructionIndex;
+  }
+
+  public void setInstructionIndex(int instructionIndex) {
+    this.instructionIndex = instructionIndex;
   }
 }

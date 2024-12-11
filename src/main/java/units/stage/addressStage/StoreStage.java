@@ -1,21 +1,44 @@
 package units.stage.addressStage;
 
 import instructions.Instruction;
+import units.RegisterFile;
+import units.stage.Stage;
 
 public class StoreStage extends AddressStage {
   private String stage;
   private static int number = 1;
+	private String V;
+	private Stage Q;
 
   public String getStage() {
     return stage;
   }
 
-  public StoreStage(Boolean busy, String address) {
+	public String getV() {
+		return V;
+	}
+
+	public void setV(String v) {
+		V = v;
+	}
+
+	public Stage getQ() {
+		return Q;
+	}
+
+	public void setQ(Stage q) {
+		Q = q;
+	}
+
+  public StoreStage(Boolean busy, String address, String V, Stage Q) {
     super(busy,address);
     this.stage = "S" + number;
     number++;
+		this.V = V;
+		this.Q = Q;
     storeTable.add(this);
   }
+
   public String toString() {
     return this.stage;
   }

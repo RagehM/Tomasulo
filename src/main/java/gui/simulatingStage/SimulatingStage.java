@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import units.instructionUnit;
@@ -23,7 +24,6 @@ public class SimulatingStage {
     Stage stage = new Stage();
     BorderPane borderPane = new BorderPane();
     Scene scene = new Scene(borderPane, 1500, 600);
-
 
     VBox instructionBox = InstructionTable.createTable(instructionTable);
     instructionBox.setAlignment(Pos.TOP_LEFT);
@@ -55,7 +55,7 @@ public class SimulatingStage {
     FloatingMultiplyBox.setPrefWidth(400);
     FloatingMultiplyBox.setPadding(new Insets(10, 10, 10, 10));
 
-    Button nextCycle = new Button("next Cycle!");
+    Button nextCycle = new Button("next Cycle ->");
 
     nextCycle.setOnAction(e -> {
       Simulate.Simulate();
@@ -66,13 +66,15 @@ public class SimulatingStage {
       InstructionTable.instructionTableView.refresh();
     });
 
+//    Button prevCycle = new Button("<- Prev Cycle"); // eh2 eh2 eh2
+
     VBox leftPane = new VBox(10, instructionBox, loadBox, storeBox);
     leftPane.setPadding(new Insets(10));
 
     VBox rightPane = new VBox(10, registerBox, FloatingAdderBox, FloatingMultiplyBox);
     rightPane.setPadding(new Insets(10));
 
-    VBox bottomPane = new VBox(10,nextCycle);
+    HBox bottomPane = new HBox(10, nextCycle);
     bottomPane.setAlignment(Pos.BOTTOM_CENTER);
     bottomPane.setPadding(new Insets(10));
 

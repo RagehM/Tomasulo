@@ -161,6 +161,9 @@ public class instructionUnit {
 			// Replace in load RS
 			loadstage.setBusy(true);
 			loadstage.setAddress(instruction.getOperand1());
+			loadstage.setIssueCycle(cycle + 1);
+			loadstage.setInstructionIndex(lastInstructionIndex);
+			System.out.println(lastInstructionIndex);
 			loadTable.remove(firstUnusedIndex);
 			loadTable.add(firstUnusedIndex, loadstage);
 			// Update RF Dependency
@@ -182,6 +185,15 @@ public class instructionUnit {
 			// Replace in load RS
 			storeStage.setBusy(true);
 			storeStage.setAddress(instruction.getOperand1());
+			RegisterFile destinationRegister = getRegister(instruction.getDestination());
+			if(destinationRegister.getQi() == null) {
+				storeStage.setV(destinationRegister.getContent());
+			}
+			else {
+				storeStage.setQ(destinationRegister.getQi());
+			}
+			storeStage.setIssueCycle(cycle + 1);
+			storeStage.setInstructionIndex(lastInstructionIndex);
 			storeTable.remove(firstUnusedIndex);
 			storeTable.add(firstUnusedIndex, storeStage);
 			// Update Instruction Table Entry
@@ -207,6 +219,8 @@ public class instructionUnit {
       else {
         adderStage.setQk(operandRegister2.getQi());
       }
+			adderStage.setIssueCycle(cycle + 1);
+			adderStage.setInstructionIndex(lastInstructionIndex);
       RegisterFile destinationRegister = getRegister(instruction.getDestination());
       updateRegister(instruction.getDestination(), adderStage);
       adderTable.remove(reservedAdder);
@@ -232,6 +246,8 @@ public class instructionUnit {
       else {
         multiplyStage.setQk(operandRegister2.getQi());
       }
+			multiplyStage.setIssueCycle(cycle + 1);
+			multiplyStage.setInstructionIndex(lastInstructionIndex);
       RegisterFile destinationRegister = getRegister(instruction.getDestination());
       updateRegister(instruction.getDestination(), multiplyStage);
       adderTable.remove(reservedMultiply);
@@ -255,16 +271,25 @@ public class instructionUnit {
 			if (tmp.getBusy()) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
+				if(! (tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) ) {
+					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
+					instruction.setExecutionComplete(cycle + 1);
+					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}
 			}
 		}
 
 		// Store Loop
 		for (int i = 0; i < Stage.storeTable.size(); i++) {
 			StoreStage tmp = Stage.storeTable.get(i);
-			if (tmp.getBusy()) {// TODO: Store dependency check condition
+			if (tmp.getBusy() && tmp.getQ() == null) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
-
+				if(! (tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) ) {
+					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
+					instruction.setExecutionComplete(cycle + 1);
+					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}
 			}
 		}
 
@@ -274,6 +299,11 @@ public class instructionUnit {
 			if (tmp.getBusy() && tmp.getQj() == null && tmp.getQk() == null) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
+				if(! (tmp.getExecutionCycle() > InstructionSetup.getFloatingLatency()) ) {
+					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
+					instruction.setExecutionComplete(cycle + 1);
+					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}
 			}
 		}
 
@@ -283,8 +313,30 @@ public class instructionUnit {
 			if (tmp.getBusy() && tmp.getQj() == null && tmp.getQk() == null) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
-
+				if(! (tmp.getExecutionCycle() > InstructionSetup.getFloatingLatency()) ) {
+					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
+					instruction.setExecutionComplete(cycle + 1);
+					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}
 			}
+		}
+	}
+
+	public static void writeBack() {
+		for(int i = 0; i < loadTable.size(); i++) {
+
+		}
+
+		for(int i = 0; i < storeTable.size(); i++) {
+
+		}
+
+		for(int i = 0; i < adderTable.size(); i++) {
+
+		}
+
+		for(int i = 0; i < multiplyTable.size(); i++) {
+
 		}
 	}
 }

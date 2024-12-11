@@ -44,7 +44,7 @@ public class SetupStage {
       }
 
       for(int i = 0; i < AddressSetup.getStoreSize(); i++) {
-        new StoreStage(false,"");
+        new StoreStage(false,"", null, null);
       }
 
       for(int i = 0; i < AluSetup.getFloatingAdder(); i++) {
