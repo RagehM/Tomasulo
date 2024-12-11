@@ -15,11 +15,12 @@ import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
+import units.stage.aluStage.IntegerStage;
 
 import java.util.ArrayList;
 
 public class SimulatingStage {
-  public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable, ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable, ArrayList<FloatingMultiplyStage> floatingMultiplyTable, ArrayList<IntegerRegister> integerRegisterTable) {
+  public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable, ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable, ArrayList<FloatingMultiplyStage> floatingMultiplyTable, ArrayList<IntegerStage> integerRegisterTable) {
     Stage stage = new Stage();
     BorderPane borderPane = new BorderPane();
     Scene scene = new Scene(borderPane, 1500, 600);
@@ -59,6 +60,11 @@ public class SimulatingStage {
     FloatingMultiplyBox.setPrefWidth(400);
     FloatingMultiplyBox.setPadding(new Insets(10, 10, 10, 10));
 
+    VBox IntegerAdderBox = AluTable.createIntegerTable(integerRegisterTable, AluSetup.getIntegerAdder(), "multiply");
+    IntegerAdderBox.setAlignment(Pos.BOTTOM_RIGHT);
+    IntegerAdderBox.setPrefWidth(400);
+    IntegerAdderBox.setPadding(new Insets(10, 10, 10, 10));
+
     Button nextCycle = new Button("next Cycle ->");
 
     nextCycle.setOnAction(e -> {
@@ -79,7 +85,7 @@ public class SimulatingStage {
     VBox leftPane = new VBox(10, instructionBox, loadBox, storeBox);
     leftPane.setPadding(new Insets(10));
 
-    VBox rightPane = new VBox(10, topRightPane, FloatingAdderBox, FloatingMultiplyBox);
+    VBox rightPane = new VBox(10, topRightPane, FloatingAdderBox, FloatingMultiplyBox,IntegerAdderBox);
     rightPane.setPadding(new Insets(10));
 
     HBox bottomPane = new HBox(10, nextCycle);

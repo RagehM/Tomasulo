@@ -63,7 +63,7 @@ public class SetupStage {
 
 			Stage simStage = SimulatingStage.setupSimulatingStage(instructionUnit.instructionTable,
 					units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable,
-					units.stage.Stage.multiplyTable, integerRegisterTable);
+					units.stage.Stage.multiplyTable, units.stage.Stage.integerTable);
 			simStage.show();
 			stage.hide();
 		});

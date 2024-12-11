@@ -2,16 +2,20 @@ package units.stage;
 
 import java.util.ArrayList;
 
+import units.IntegerRegister;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
+import units.stage.aluStage.IntegerStage;
 
 public class Stage implements Comparable {
 	public static ArrayList<LoadStage> loadTable = new ArrayList();
 	public static ArrayList<StoreStage> storeTable = new ArrayList();
 	public static ArrayList<FloatingAdderStage> adderTable = new ArrayList();
 	public static ArrayList<FloatingMultiplyStage> multiplyTable = new ArrayList();
+	public static ArrayList<IntegerStage> integerTable=new ArrayList<>();
+
 	public static int reservedLoad = 0;
 	public static int reservedStore = 0;
 	public static int reservedAdder = 0;
