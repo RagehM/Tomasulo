@@ -1,6 +1,10 @@
 package gui.simulatingStage;
 
-import gui.setupStage.*;
+import java.util.ArrayList;
+
+import gui.setupStage.AddressSetup;
+import gui.setupStage.AluSetup;
+import gui.setupStage.SetupStage;
 import instructions.Instruction;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,17 +14,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import units.IntegerRegister;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
 import units.stage.aluStage.IntegerStage;
 
-import java.util.ArrayList;
-
 public class SimulatingStage {
-  public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable, ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable, ArrayList<FloatingMultiplyStage> floatingMultiplyTable, ArrayList<IntegerStage> integerRegisterTable) {
+  public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable, ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable, ArrayList<FloatingMultiplyStage> floatingMultiplyTable, ArrayList<IntegerStage> integerTable) {
     Stage stage = new Stage();
     BorderPane borderPane = new BorderPane();
     Scene scene = new Scene(borderPane, 1500, 600);
@@ -50,17 +51,17 @@ public class SimulatingStage {
     integerRegisterBox.setPrefWidth(400);
     integerRegisterBox.setPadding(new Insets(10, 10, 10, 10));
 
-    VBox FloatingAdderBox = AluTable.createTable(floatingAdderTable, AluSetup.getFloatingAdder(), "adder");
+    VBox FloatingAdderBox = AluFloatTable.createTable(floatingAdderTable, AluSetup.getFloatingAdder(), "adder");
     FloatingAdderBox.setAlignment(Pos.CENTER_RIGHT);
     FloatingAdderBox.setPrefWidth(400);
     FloatingAdderBox.setPadding(new Insets(10, 10, 10, 10));
 
-    VBox FloatingMultiplyBox = AluTable.createTable(floatingMultiplyTable, AluSetup.getFloatingMul(), "multiply");
+    VBox FloatingMultiplyBox = AluFloatTable.createTable(floatingMultiplyTable, AluSetup.getFloatingMul(), "multiply");
     FloatingMultiplyBox.setAlignment(Pos.BOTTOM_RIGHT);
     FloatingMultiplyBox.setPrefWidth(400);
     FloatingMultiplyBox.setPadding(new Insets(10, 10, 10, 10));
 
-    VBox IntegerAdderBox = AluTable.createIntegerTable(integerRegisterTable, AluSetup.getIntegerAdder(), "multiply");
+    VBox IntegerAdderBox = AluIntegerTable.createIntegerTable(integerTable, AluSetup.getIntegerAdder());
     IntegerAdderBox.setAlignment(Pos.BOTTOM_RIGHT);
     IntegerAdderBox.setPrefWidth(400);
     IntegerAdderBox.setPadding(new Insets(10, 10, 10, 10));
@@ -71,8 +72,8 @@ public class SimulatingStage {
       Simulate.Simulate();
       AddressTable.loadTableView.refresh();
       AddressTable.storeTableView.refresh();
-      AluTable.adderTableView.refresh();
-      AluTable.multiplyTableView.refresh();
+      AluFloatTable.adderTableView.refresh();
+      AluFloatTable.multiplyTableView.refresh();
       InstructionTable.instructionTableView.refresh();
     });
 

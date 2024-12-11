@@ -4,10 +4,12 @@ import units.stage.Stage;
 
 import java.util.ArrayList;
 
+import units.stage.aluStage.IntegerStage;
+
 public class IntegerRegister {
 	private String register;
 	private static int number = 0;
-  private Stage Qi; //TODO change this to be of type integerStage
+  private IntegerStage Qi;
 	private int content;
 
 	public String getRegister() {
@@ -18,11 +20,11 @@ public class IntegerRegister {
 		this.register = register;
 	}
 
-	public Stage getQi() {
+	public IntegerStage getQi() {
 		return Qi;
 	}
 
-	public void setQi(Stage qi) {
+	public void setQi(IntegerStage qi) {
 		Qi = qi;
 	}
 
@@ -36,7 +38,7 @@ public class IntegerRegister {
 
 	public static ArrayList<IntegerRegister> integerRegisterTable = new ArrayList<IntegerRegister>();
 
-	public IntegerRegister(Stage qi, int content) {
+	public IntegerRegister(IntegerStage qi, int content) {
 		this.Qi = qi;
 		this.content = content;
 		this.register = "R" + number;
