@@ -1,17 +1,22 @@
 package gui.simulatingStage;
 
-import static units.instructionUnit.*;
-import static units.stage.Stage.*;
+import static units.instructionUnit.dispatch;
+import static units.instructionUnit.execute;
+import static units.instructionUnit.instructionTable;
+import static units.instructionUnit.lastInstructionIndex;
+import static units.instructionUnit.writeBack;
 
 public class Simulate {
 	public static int cycle = 0;
+
 	public static void Simulate() {
 //		adderTable.get(0).setBusy(true);
 //		loadTable.get(0).setAddress("505");
 //		System.out.println(instructionTable.get(0).toString());
 		// w
 		execute();
-		if(lastInstructionIndex != instructionTable.size()){
+		writeBack();
+		if (lastInstructionIndex != instructionTable.size()) {
 			dispatch();
 		}
 		cycle++;
