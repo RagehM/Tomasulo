@@ -149,6 +149,7 @@ public class instructionUnit {
 
 	public static void dispatch() {
 		Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
+		String operation = getInstructionOperation(instruction);
 		if (getInstructionOperation(instruction).equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
 			// Check if the load must wait for a store
 			if (LoadStage.checkAddressClash(instruction)) {
