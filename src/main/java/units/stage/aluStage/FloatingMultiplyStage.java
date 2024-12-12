@@ -1,13 +1,12 @@
 package units.stage.aluStage;
 
+import static gui.simulatingStage.Simulate.cycle;
 import instructions.Instruction;
 import units.FloatRegister;
-import units.stage.Stage;
-
-import static gui.simulatingStage.Simulate.cycle;
-import static units.FloatRegister.getRegister;
-import static units.FloatRegister.updateRegister;
+import static units.FloatRegister.getFloatRegister;
+import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.lastInstructionIndex;
+import units.stage.Stage;
 public class FloatingMultiplyStage extends AluStage {
 	private String stage;
 	private static int number = 1;
@@ -37,7 +36,7 @@ public class FloatingMultiplyStage extends AluStage {
 		multiplyStage.setOp(operation);
 
 		// get the first operand register
-		FloatRegister operandRegister1 = getRegister(instruction.getOperand1());
+		FloatRegister operandRegister1 = getFloatRegister(instruction.getOperand1());
 		float operandValue1 = operandRegister1.getContent();
 
 		// check if that register does not depend on any other stage
@@ -51,7 +50,7 @@ public class FloatingMultiplyStage extends AluStage {
 		}
 
 		// get the second operand register
-		FloatRegister operandRegister2 = getRegister(instruction.getOperand2());
+		FloatRegister operandRegister2 = getFloatRegister(instruction.getOperand2());
 		float operandValue2 = operandRegister2.getContent();
 
 		// check if that register does not depend on any other stage
@@ -66,7 +65,7 @@ public class FloatingMultiplyStage extends AluStage {
 
 		multiplyStage.setIssueCycle(cycle + 1);
 		multiplyStage.setInstructionIndex(lastInstructionIndex);
-		updateRegister(instruction.getDestination(), multiplyStage);
+		updateFloatRegister(instruction.getDestination(), multiplyStage);
 		instruction.setIssue(cycle + 1);
 		multiplyTable.set(firstUnusedIndex, multiplyStage);
 		reservedMultiply++;

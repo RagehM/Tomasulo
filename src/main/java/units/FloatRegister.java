@@ -53,7 +53,7 @@ public class FloatRegister {
 		}
 	}
 
-	public static FloatRegister getRegister(String registerName) {
+	public static FloatRegister getFloatRegister(String registerName) {
 		for (int i = 0; i < floatRegisterTable.size(); i++) {
 			if (registerName.equals(floatRegisterTable.get(i).getRegister())) {
 				return floatRegisterTable.get(i);
@@ -62,7 +62,7 @@ public class FloatRegister {
 		return null;
 	}
 
-	public static int getRegisterIndex(String registerName) {
+	public static int getFloatRegisterIndex(String registerName) {
 		for (int i = 0; i < floatRegisterTable.size(); i++) {
 			if (registerName.equals(floatRegisterTable.get(i).getRegister())) {
 				return i;
@@ -71,9 +71,9 @@ public class FloatRegister {
 		return -1;
 	}
 
-	public static void updateRegister(String registerName, Stage stage) {
-		FloatRegister register = getRegister(registerName);
-		int registerIndex = getRegisterIndex(registerName);
+	public static void updateFloatRegister(String registerName, Stage stage) {
+		FloatRegister register = getFloatRegister(registerName);
+		int registerIndex = getFloatRegisterIndex(registerName);
 		if (register != null && registerIndex != -1) {
 			register.setQi(stage);
 			floatRegisterTable.remove(registerIndex);

@@ -1,12 +1,11 @@
 package units.stage.addressStage;
 
-import instructions.Instruction;
-import units.stage.Stage;
-
 import static gui.simulatingStage.Simulate.cycle;
-import static units.FloatRegister.updateRegister;
+import instructions.Instruction;
+import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
+import units.stage.Stage;
 public class LoadStage extends AddressStage {
 	private String stage;
 	private static int number = 1;
@@ -60,7 +59,7 @@ public class LoadStage extends AddressStage {
 		loadTable.set(firstUnusedIndex, loadstage);
 
 		// Update Register File Dependency
-		updateRegister(instruction.getDestination(), loadstage);
+		updateFloatRegister(instruction.getDestination(), loadstage); // to be checked again
 
 		// Update Instruction Table Entry
 		instruction.setIssue(cycle + 1);

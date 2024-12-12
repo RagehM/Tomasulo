@@ -51,4 +51,31 @@ public class IntegerRegister {
 			new IntegerRegister(null, i);
 		}
 	}
+
+	public static IntegerRegister getIntegerRegister(String registerName) {
+		for (int i = 0; i < integerRegisterTable.size(); i++) {
+			if (registerName.equals(integerRegisterTable.get(i).getRegister())) {
+				return integerRegisterTable.get(i);
+			}
+		}
+		return null;
+	}
+
+	public static int getIntegerRegisterIndex(String registerName) {
+		for (int i = 0; i < integerRegisterTable.size(); i++) {
+			if (registerName.equals(integerRegisterTable.get(i).getRegister())) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public static void updateIntegerRegister(String registerName, IntegerStage integerStage) {
+		IntegerRegister register = getIntegerRegister(registerName);
+		int registerIndex = getIntegerRegisterIndex(registerName);
+		if (register != null && registerIndex != -1) {
+			register.setQi(integerStage);
+			integerRegisterTable.set(registerIndex, register);
+		}
+	}
 }

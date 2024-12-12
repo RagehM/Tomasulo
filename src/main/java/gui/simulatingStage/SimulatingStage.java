@@ -75,6 +75,7 @@ public class SimulatingStage {
       AluFloatTable.adderTableView.refresh();
       AluFloatTable.multiplyTableView.refresh();
       InstructionTable.instructionTableView.refresh();
+      AluIntegerTable.integerAdderTableView.refresh();
     });
 
 //    Button prevCycle = new Button("<- Prev Cycle"); // eh2 eh2 eh2

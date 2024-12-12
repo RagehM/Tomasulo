@@ -10,7 +10,7 @@ import static units.stage.Stage.reservedLoad;
 import static units.stage.Stage.reservedMultiply;
 import static units.stage.Stage.reservedStore;
 import static units.stage.Stage.storeTable;
-
+import static units.stage.Stage.reservedInteger;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
+import units.stage.aluStage.IntegerStage;
 
 public class instructionUnit {
 	public static int lastInstructionIndex = 0;
@@ -85,16 +86,18 @@ public class instructionUnit {
 
 	private static String getInstructionOperation(Instruction instruction) {
 		if (instruction instanceof IntegerInstruction) {
-			if (((IntegerInstruction) instruction).getOperation().equals("LW")
-					|| ((IntegerInstruction) instruction).getOperation().equals("LD")) {
+			String operation = ((IntegerInstruction) instruction).getOperation();
+			if (operation.equals("LW") || (operation.equals("LD")) ) {
 				return "load";
-			} else if (((IntegerInstruction) instruction).getOperation().equals("SW")
-					|| ((IntegerInstruction) instruction).getOperation().equals("SD")
-					|| ((IntegerInstruction) instruction).getOperation().equals("S.S")
-					|| ((IntegerInstruction) instruction).getOperation().equals("S.D")) {
+			} 
+			else if (operation.equals("SW") || operation.equals("SD") || operation.equals("S.S") || operation.equals("S.D")) {
 				return "store";
 			}
-		} else if (instruction instanceof FloatingInstruction) {
+			else if(operation.equals("DADDI") || operation.equals("DSUBI")) {
+				return operation;
+			}
+		} 
+		else if (instruction instanceof FloatingInstruction) {
 			String operation = ((FloatingInstruction) instruction).getOperation();
 			if (operation.equals("L.S") || (operation.equals("L.D"))) {
 				return "load";
@@ -138,7 +141,6 @@ public class instructionUnit {
 					}
 				} 
 				else {
-					System.out.println(instruction[0].contains(":"));
 					if (instruction[0].contains(":")) {
 						type = getInstructionType(instruction[1]);
 						labels.put(instruction[0].substring(0, instruction[0].length() - 1), instructionTable.size());
@@ -190,7 +192,7 @@ public class instructionUnit {
 	public static void dispatch() {
 		Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
 		String operation = getInstructionOperation(instruction);
-		System.out.println(reservedAdder < AluSetup.getFloatingAdder());
+
 		if (operation.equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
 			LoadStage.dispatchLoad(instruction);
 		}
@@ -202,6 +204,9 @@ public class instructionUnit {
 		}
 		else if ( (operation.equals("MUL") || operation.equals("DIV") ) && reservedMultiply < AluSetup.getFloatingMul()) {
 			FloatingMultiplyStage.dispatchMultiply(instruction, operation);
+		}
+		else if ( ( operation.equals("DADDI") || operation.equals("DSUBI") ) && reservedInteger < AluSetup.getIntegerAdder()) {
+			IntegerStage.dispatchInteger(instruction, operation);
 		}
 		else {
 			return;

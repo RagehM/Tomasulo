@@ -19,6 +19,7 @@ public class Stage implements Comparable {
 	public static int reservedStore = 0;
 	public static int reservedAdder = 0;
 	public static int reservedMultiply = 0;
+	public static int reservedInteger = 0;
 	protected Boolean busy;
 	protected int cycleOfExecution = 0;
 	private int issueCycle = 0;
