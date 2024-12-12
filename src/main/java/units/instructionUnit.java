@@ -2,8 +2,10 @@ package units;
 
 import static gui.simulatingStage.Simulate.cycle;
 import static units.FloatRegister.floatRegisterTable;
+import static units.IntegerRegister.integerRegisterTable;
 import static units.stage.Stage.adderTable;
 import static units.stage.Stage.branchTable;
+import static units.stage.Stage.integerTable;
 import static units.stage.Stage.loadTable;
 import static units.stage.Stage.multiplyTable;
 import static units.stage.Stage.reservedAdder;
@@ -194,7 +196,6 @@ public class instructionUnit {
 		Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
 		String operation = getInstructionOperation(instruction);
 
-
 		if (operation.equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
 			LoadStage.dispatchLoad(instruction);
 		} else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
@@ -213,7 +214,6 @@ public class instructionUnit {
 			return;
 		}
 		lastInstructionIndex++;
-
 	}
 
 	public static void execute() {
@@ -278,6 +278,20 @@ public class instructionUnit {
 				}
 			}
 		}
+
+		// Integer Loop
+		for(int i = 0; i < integerTable.size(); i++) {
+			IntegerStage tmp = integerTable.get(i);
+			if(tmp.getBusy() && tmp.getQj() == null) {
+				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
+				if(!(tmp.getExecutionCycle() > InstructionSetup.getIntegerLatency())) {
+					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
+					instruction.setExecutionComplete(cycle + 1);
+					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}
+			}
+		}
+
 	}
 
 	public static void writeBack() {
@@ -322,24 +336,31 @@ public class instructionUnit {
 		if (writebackQueue.size() != 0) {
 			Stage busWriter = writebackQueue.remove();
 			busWriter.setBusy(false);
-			System.out.println(busWriter.getBusy());
 			busWriter.setExecutionCycle(busWriter.getExecutionCycle() + 10);
 			// Update instruction table
 			Instruction instruction = instructionTable.get(busWriter.getInstructionIndex());
 			instruction.setWriteResult(cycle + 1);
 			instructionTable.set(busWriter.getInstructionIndex(), instruction);
 
-			float value;
-
+			// set the output of float stage to be written on the bus 
+			float floatValue;
 			if (busWriter instanceof LoadStage) {
-				value = ((LoadStage) busWriter).produce();
+				floatValue = ((LoadStage) busWriter).produce();
 				reservedLoad--;
 			} else if (busWriter instanceof FloatingAdderStage) {
-				value = ((FloatingAdderStage) busWriter).produce();
+				floatValue = ((FloatingAdderStage) busWriter).produce();
 				reservedAdder--;
 			} else {
-				value = ((FloatingMultiplyStage) busWriter).produce();
+				floatValue = ((FloatingMultiplyStage) busWriter).produce();
 				reservedMultiply--;
+			}
+
+			// set the output of integer stage to be written on the bus
+			int integerValue;
+			if((busWriter instanceof IntegerStage)) {
+				integerValue = ((IntegerStage) busWriter).produce();
+				System.out.println(integerValue);
+				reservedInteger--;
 			}
 
 			for (int i = 0; i < floatRegisterTable.size(); i++) {
@@ -347,7 +368,7 @@ public class instructionUnit {
 				// Check the name of the consumed stage
 				if (busWriter.equals(register.getQi())) {
 					register.setQi(null);
-					register.setContent(value);
+					register.setContent(floatValue);
 				}
 			}
 
@@ -355,7 +376,7 @@ public class instructionUnit {
 				StoreStage stage = storeTable.get(i);
 				if (busWriter.equals(stage.getQ())) {
 					stage.setQ(null);
-					stage.setV((int) value);
+					stage.setV((int) floatValue);
 				}
 			}
 
@@ -363,11 +384,11 @@ public class instructionUnit {
 				FloatingAdderStage stage = adderTable.get(i);
 				if (busWriter.equals(stage.getQj())) {
 					stage.setQj(null);
-					stage.setVj(value);
+					stage.setVj(floatValue);
 				}
 				if (busWriter.equals(stage.getQk())) {
 					stage.setQk(null);
-					stage.setVk(value);
+					stage.setVk(floatValue);
 				}
 			}
 
@@ -375,11 +396,11 @@ public class instructionUnit {
 				FloatingMultiplyStage stage = multiplyTable.get(i);
 				if (busWriter.equals(stage.getQj())) {
 					stage.setQj(null);
-					stage.setVj(value);
+					stage.setVj(floatValue);
 				}
 				if (busWriter.equals(stage.getQk())) {
 					stage.setQk(null);
-					stage.setVk(value);
+					stage.setVk(floatValue);
 				}
 			}
 

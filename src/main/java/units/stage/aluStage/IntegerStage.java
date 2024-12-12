@@ -69,7 +69,7 @@ public class IntegerStage extends Stage {
         return this.stage;
     }
 
-    public float produce() {
+    public int produce() {
         return this.getOp().contains("DSUBI") ? (this.getVj() - this.getImmediate()) : (this.getVj() + this.getImmediate());
     }
     
