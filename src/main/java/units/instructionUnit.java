@@ -287,8 +287,8 @@ public class instructionUnit {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
 
-				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) || !(tmp.isMiss()
-						&& tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty())) {
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) || (tmp.isMiss()
+						&& !(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty()))) {
 
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
@@ -312,8 +312,8 @@ public class instructionUnit {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
 
-				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) || !(tmp.isMiss()
-						&& tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty())) {
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) || (tmp.isMiss()
+						&& !(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty()))) {
 
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
