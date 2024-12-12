@@ -8,7 +8,7 @@ public class IntegerRegister {
 	private String register;
 	private static int number = 0;
 	private IntegerStage Qi;
-	private int content;
+	private long content;
 
 	public String getRegister() {
 		return register;
@@ -26,17 +26,17 @@ public class IntegerRegister {
 		Qi = qi;
 	}
 
-	public int getContent() {
+	public long getContent() {
 		return content;
 	}
 
-	public void setContent(int content) {
+	public void setContent(long content) {
 		this.content = content;
 	}
 
 	public static ArrayList<IntegerRegister> integerRegisterTable = new ArrayList<IntegerRegister>();
 
-	public IntegerRegister(IntegerStage qi, int content) {
+	public IntegerRegister(IntegerStage qi, long content) {
 		this.Qi = qi;
 		this.content = content;
 		this.register = "R" + number;
@@ -55,7 +55,7 @@ public class IntegerRegister {
 
 	public static void initRegisterFile() {
 		for (int i = 0; i < 32; i++) {
-			new IntegerRegister(null, i);
+			new IntegerRegister(null, (long)i);
 		}
 	}
 

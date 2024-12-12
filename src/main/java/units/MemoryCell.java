@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class MemoryCell {
     private int address;
-    private float value;
+    private double value;
     public static ArrayList<MemoryCell> MemoryCellTable;
 
-    public MemoryCell(int address, float value) {
+    public MemoryCell(int address, double value) {
         this.address = address;
         this.value = value;
     }
@@ -20,7 +20,7 @@ public class MemoryCell {
         this.address = address;
     }
 
-    public float getValue() {
+    public double getValue() {
         return value;
     }
 

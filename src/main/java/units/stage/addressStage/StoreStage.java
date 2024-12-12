@@ -10,18 +10,18 @@ import units.stage.Stage;
 public class StoreStage extends AddressStage {
 	private String stage;
 	private static int number = 1;
-	private int V;
+	private long V;
 	private Stage Q;
 
 	public String getStage() {
 		return stage;
 	}
 
-	public float getV() {
+	public long getV() {
 		return V;
 	}
 
-	public void setV(int v) {
+	public void setV(long v) {
 		V = v;
 	}
 
@@ -33,7 +33,7 @@ public class StoreStage extends AddressStage {
 		Q = q;
 	}
 
-	public StoreStage(Boolean busy, String address, int V, Stage Q) {
+	public StoreStage(Boolean busy, String address, long V, Stage Q) {
 		super(busy, address);
 		this.stage = "S" + number;
 		number++;
@@ -61,7 +61,7 @@ public class StoreStage extends AddressStage {
 		storeStage.setAddress(instruction.getOperand1());
 
 		FloatRegister destinationRegister = getFloatRegister(instruction.getDestination());
-		float destinationValue = destinationRegister.getContent();
+		double destinationValue = destinationRegister.getContent();
 
 		//check if the destination Register does not depend on any stage
 		if (destinationRegister.getQi() == null) {

@@ -278,6 +278,19 @@ public class instructionUnit {
 				}
 			}
 		}
+		// Branch Loop
+		for (int i = 0; i < branchTable.size(); i++) {
+			BranchStage tmp = Stage.branchTable.get(i);
+			if (tmp.getBusy() && tmp.getQj() == null && tmp.getQk() == null) {
+				// If it is busy, increment its execution counter
+				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getFloatingLatency())) {
+					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
+					instruction.setExecutionComplete(cycle + 1);
+					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}
+			}
+		}
 	}
 
 	public static void writeBack() {
@@ -329,7 +342,7 @@ public class instructionUnit {
 			instruction.setWriteResult(cycle + 1);
 			instructionTable.set(busWriter.getInstructionIndex(), instruction);
 
-			float value;
+			double value;
 
 			if (busWriter instanceof LoadStage) {
 				value = ((LoadStage) busWriter).produce();

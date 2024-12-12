@@ -64,7 +64,7 @@ public class SetupStage {
 			}
 
 			for (int i = 0; i < AluSetup.getIntegerAdder(); i++) {
-				new IntegerStage(false, "", 0, null, 0);
+				new IntegerStage(false, "", (long)0, null, (long)0);
 			}
 
 			new BranchStage(false, "", 0);
