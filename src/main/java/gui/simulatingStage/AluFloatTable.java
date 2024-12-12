@@ -44,7 +44,6 @@ public class AluFloatTable {
       adderTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
       ObservableList<FloatingAdderStage> data = FXCollections.observableArrayList();
-      System.out.println(table.toString());
       for (int i = 0; i < table.size(); i++) {
         data.add( (FloatingAdderStage) table.get(i));
       }

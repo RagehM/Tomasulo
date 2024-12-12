@@ -1,30 +1,38 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import static units.instructionUnit.lastInstructionIndex;
-
 import instructions.BranchInstruction;
 import instructions.Instruction;
 import units.IntegerRegister;
+import static units.instructionUnit.lastInstructionIndex;
 
 public class BranchStage extends AluStage {
-
+	private String stage;
 	private int address;
+
+	public int getAddress() {
+		return address;
+	}
+
+	public String getStage() {
+		return stage;
+}
 
 	public BranchStage(boolean busy, String op, int address) {
 		super(busy, op, 0, 0, null, null);
+		this.stage = "B1";
 		this.address = address;
 		if (branchTable.size() != 0)
 			branchTable.set(0, this);
 		else
 			branchTable.add(this);
 	}
-
-	public int getAddress() {
-		return address;
+	
+	public String toString() {
+		return this.stage;
 	}
 
-	public static void displatchBranch(Instruction instruction, String operation) {
+	public static void dispatchBranch(Instruction instruction, String operation) {
 		// Branch stalls the whole pipeline until complete, therefore, no need to check
 		// for available slots for dispatch
 		// The branch RS always has 1 slot

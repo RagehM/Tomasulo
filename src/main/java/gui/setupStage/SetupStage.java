@@ -1,7 +1,5 @@
 package gui.setupStage;
 
-import static units.instructionUnit.printQueue;
-
 import gui.simulatingStage.SimulatingStage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,6 +12,7 @@ import units.Cache;
 import units.FloatRegister;
 import units.IntegerRegister;
 import units.instructionUnit;
+import static units.instructionUnit.printQueue;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.BranchStage;
@@ -72,7 +71,7 @@ public class SetupStage {
 
 			Stage simStage = SimulatingStage.setupSimulatingStage(instructionUnit.instructionTable,
 					units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable,
-					units.stage.Stage.multiplyTable, units.stage.Stage.integerTable);
+					units.stage.Stage.multiplyTable, units.stage.Stage.integerTable, units.stage.Stage.branchTable);
 			simStage.show();
 			stage.hide();
 		});

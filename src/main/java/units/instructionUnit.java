@@ -204,7 +204,7 @@ public class instructionUnit {
 		} else if ((operation.equals("MUL") || operation.equals("DIV")) && reservedMultiply < AluSetup.getFloatingMul()) {
 			FloatingMultiplyStage.dispatchMultiply(instruction, operation);
 		} else if ((operation.equals("BEQ") || operation.equals("BNE"))) {
-			BranchStage.displatchBranch(instruction, operation);
+			BranchStage.dispatchBranch(instruction, operation);
 		}
 		else if ( ( operation.equals("DADDI") || operation.equals("DSUBI") ) && reservedInteger < AluSetup.getIntegerAdder()) {
 			IntegerStage.dispatchInteger(instruction, operation);
