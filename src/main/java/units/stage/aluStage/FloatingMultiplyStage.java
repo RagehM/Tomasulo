@@ -15,7 +15,7 @@ public class FloatingMultiplyStage extends AluStage {
 		return stage;
 	}
 
-	public FloatingMultiplyStage(Boolean busy, String op, float Vj, float Vk, Stage Qj, Stage Qk) {
+	public FloatingMultiplyStage(Boolean busy, String op, double Vj, double Vk, Stage Qj, Stage Qk) {
 		super(busy, op, Vj, Vk, Qj, Qk);
 		this.stage = "M" + number;
 		number++;
@@ -37,7 +37,7 @@ public class FloatingMultiplyStage extends AluStage {
 
 		// get the first operand register
 		FloatRegister operandRegister1 = getFloatRegister(instruction.getOperand1());
-		float operandValue1 = operandRegister1.getContent();
+		double operandValue1 = operandRegister1.getContent();
 
 		// check if that register does not depend on any other stage
 		if (operandRegister1.getQi() == null) {
@@ -51,7 +51,7 @@ public class FloatingMultiplyStage extends AluStage {
 
 		// get the second operand register
 		FloatRegister operandRegister2 = getFloatRegister(instruction.getOperand2());
-		float operandValue2 = operandRegister2.getContent();
+		double operandValue2 = operandRegister2.getContent();
 
 		// check if that register does not depend on any other stage
 		if (operandRegister2.getQi() == null) {
@@ -72,7 +72,7 @@ public class FloatingMultiplyStage extends AluStage {
 	}
 
 
-	public float produce() {
+	public double produce() {
 		return this.getOp().contains("MUL") ? (this.getVj() * this.getVk()) : (this.getVj() / this.getVk());
 	}
 }

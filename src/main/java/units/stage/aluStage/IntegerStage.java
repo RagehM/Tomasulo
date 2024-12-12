@@ -10,11 +10,11 @@ public class IntegerStage extends Stage {
     private String stage;
 	private static int number = 1;
     private String op;
-    private int Vj;
+    private Long Vj;
     private IntegerStage Qj;
-    private int immediate; // Immediate Value
+    private Long immediate; // Immediate Value
 
-    public IntegerStage(Boolean busy, String op, int Vj, IntegerStage Qj, int immediate) {
+    public IntegerStage(Boolean busy, String op, Long Vj, IntegerStage Qj, Long immediate) {
         this.stage = "I" + number;
         number++;
         this.busy = busy;
@@ -41,19 +41,19 @@ public class IntegerStage extends Stage {
         this.op = op;
     }
 
-    public int getVj() {
+    public Long getVj() {
         return Vj;
     }
 
-    public void setVj(int vj) {
+    public void setVj(Long vj) {
         Vj = vj;
     }
 
-    public int getImmediate() {
+    public Long getImmediate() {
         return immediate;
     }
 
-    public void setImmediate(int immediate) {
+    public void setImmediate(Long immediate) {
         this.immediate = immediate;
     }
 
@@ -69,7 +69,7 @@ public class IntegerStage extends Stage {
         return this.stage;
     }
 
-    public float produce() {
+    public double produce() {
         return this.getOp().contains("DSUBI") ? (this.getVj() - this.getImmediate()) : (this.getVj() + this.getImmediate());
     }
     
@@ -81,7 +81,7 @@ public class IntegerStage extends Stage {
 		integerStage.setOp(operation);
 
         IntegerRegister operandRegister1 = getIntegerRegister(instruction.getOperand1());
-        int operandValue1 = operandRegister1.getContent();
+        Long operandValue1 = operandRegister1.getContent();
 
         if (operandRegister1.getQi() == null) {
 			// if yes then set Vj to be the content of that register

@@ -70,7 +70,7 @@ public class LoadStage extends AddressStage {
 		reservedLoad++;
 	}
 
-	public float produce() {
+	public double produce() {
 		System.out.println("METHOD NOT IMPLEMENTED YET: LOAD -> PRODUCE");
 
 		return -1;

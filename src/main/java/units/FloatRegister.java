@@ -8,7 +8,7 @@ public class FloatRegister {
 	private String register;
 	private static int number = 0;
 	private Stage Qi;
-	private float content;
+	private double content;
 	public static ArrayList<FloatRegister> floatRegisterTable = new ArrayList<FloatRegister>();
 
 	public String getRegister() {
@@ -27,15 +27,15 @@ public class FloatRegister {
 		Qi = qi;
 	}
 
-	public float getContent() {
+	public double getContent() {
 		return content;
 	}
 
-	public void setContent(float content) {
+	public void setContent(double content) {
 		this.content = content;
 	}
 
-	public FloatRegister(Stage qi, float content) {
+	public FloatRegister(Stage qi, double content) {
 		this.Qi = qi;
 		this.content = content;
 		this.register = "F" + number;

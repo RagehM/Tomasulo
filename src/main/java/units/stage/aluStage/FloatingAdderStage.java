@@ -15,7 +15,7 @@ public class FloatingAdderStage extends AluStage {
 		return stage;
 	}
 
-	public FloatingAdderStage(Boolean busy, String op, float Vj, float Vk, Stage Qj, Stage Qk) {
+	public FloatingAdderStage(Boolean busy, String op, double Vj, double Vk, Stage Qj, Stage Qk) {
 		super(busy, op, Vj, Vk, Qj, Qk);
 		this.stage = "A" + number;
 		number++;
@@ -26,7 +26,7 @@ public class FloatingAdderStage extends AluStage {
 		return this.stage;
 	}
 
-	public float produce() {
+	public double produce() {
 		return this.getOp().contains("SUB") ? (this.getVj() - this.getVk()) : (this.getVj() + this.getVk());
 	}
 
@@ -38,7 +38,7 @@ public class FloatingAdderStage extends AluStage {
 		adderStage.setOp(operation);
 
 		FloatRegister operandRegister1 = getFloatRegister(instruction.getOperand1());
-		float operandValue1 = operandRegister1.getContent();
+		double operandValue1 = operandRegister1.getContent();
 
 		// check if that register does not depend on any other stage
 		if (operandRegister1.getQi() == null) {
@@ -51,7 +51,7 @@ public class FloatingAdderStage extends AluStage {
 		}
 
 		FloatRegister operandRegister2 = getFloatRegister(instruction.getOperand2());
-		float operandValue2 = operandRegister2.getContent();
+		double operandValue2 = operandRegister2.getContent();
 		// check if that register does not depend on any other stage
 		if (operandRegister2.getQi() == null) {
 			// if yes then set Vk to be the content of that register

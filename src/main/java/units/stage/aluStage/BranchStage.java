@@ -40,9 +40,9 @@ public class BranchStage extends AluStage {
 		BranchStage branchStage = new BranchStage(true, operation, branchInstruction.getAddress());
 
 		IntegerRegister operandRegister1 = IntegerRegister.getRegister(instruction.getOperand1());
-		int registerContent1 = operandRegister1.getContent();
+		Long registerContent1 = operandRegister1.getContent();
 		IntegerRegister operandRegister2 = IntegerRegister.getRegister(instruction.getOperand2());
-		int registerContent2 = operandRegister2.getContent();
+		Long registerContent2 = operandRegister2.getContent();
 
 		if (operandRegister1.getQi() == null) {
 			branchStage.setVj(registerContent1);

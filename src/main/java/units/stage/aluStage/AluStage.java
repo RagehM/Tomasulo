@@ -4,8 +4,8 @@ import units.stage.Stage;
 
 public class AluStage extends Stage {
 	private String op;
-	private float Vj;
-	private float Vk;
+	private double Vj;
+	private double Vk;
 	private Stage Qj;
 	private Stage Qk;
 
@@ -17,19 +17,19 @@ public class AluStage extends Stage {
 		this.op = op;
 	}
 
-	public float getVj() {
+	public double getVj() {
 		return Vj;
 	}
 
-	public void setVj(float vj) {
+	public void setVj(double vj) {
 		Vj = vj;
 	}
 
-	public float getVk() {
+	public double getVk() {
 		return Vk;
 	}
 
-	public void setVk(float vk) {
+	public void setVk(double vk) {
 		Vk = vk;
 	}
 
@@ -49,7 +49,7 @@ public class AluStage extends Stage {
 		Qk = qk;
 	}
 
-	public AluStage(Boolean busy, String op, float Vj, float Vk, Stage Qj, Stage Qk) {
+	public AluStage(Boolean busy, String op, double Vj, double Vk, Stage Qj, Stage Qk) {
 		this.busy = busy;
 		this.op = op;
 		this.Vj = Vj;
