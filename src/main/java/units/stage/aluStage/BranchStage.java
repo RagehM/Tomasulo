@@ -88,8 +88,8 @@ public class BranchStage extends AluStage {
 		instruction.setIssue(cycle + 1);
 
 
-		System.out.println(branchTable.toString());
-		System.out.println(branchStage.toString());
+		//System.out.println(branchTable.toString());
+		//System.out.println(branchStage.toString());
 		branchTable.set(0, branchStage);
 		// TODO: If it breaks, this is the issue
 	}

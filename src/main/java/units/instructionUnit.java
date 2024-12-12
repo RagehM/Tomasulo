@@ -32,6 +32,7 @@ import instructions.BranchInstruction;
 import instructions.FloatingInstruction;
 import instructions.Instruction;
 import instructions.IntegerInstruction;
+import units.cache.Cache;
 import units.stage.Stage;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
@@ -47,6 +48,7 @@ public class instructionUnit {
 	public static ArrayList<Instruction> instructionTable = new ArrayList<Instruction>();
 
 	private static PriorityQueue<Stage> writebackQueue = new PriorityQueue<Stage>();
+	private static PriorityQueue<StoreStage> storeQueue = new PriorityQueue<StoreStage>();
 
 	public void addInstruction(Instruction instruction) {
 		instructionTable.add(instruction);
@@ -96,9 +98,8 @@ public class instructionUnit {
 			String operation = ((IntegerInstruction) instruction).getOperation();
 			if (operation.equals("LW") || (operation.equals("LD"))) {
 				return operation;
-			} else if (operation.equals("SW") || operation.equals("SD") || operation.equals("S.S")
-					|| operation.equals("S.D")) {
-				return "store";
+			} else if (operation.equals("SW") || operation.equals("SD")) {
+				return operation;
 			} else if (operation.equals("DADDI") || operation.equals("DSUBI")) {
 				return operation;
 			}
@@ -106,9 +107,8 @@ public class instructionUnit {
 			String operation = ((FloatingInstruction) instruction).getOperation();
 			if (operation.equals("L.S") || (operation.equals("L.D"))) {
 				return operation;
-			} else if (operation.equals("SW") || operation.equals("SD") || operation.equals("S.S")
-					|| operation.equals("S.D")) {
-				return "store";
+			} else if (operation.equals("S.S") || operation.equals("S.D")) {
+				return operation;
 			}
 			if (operation.equals("ADD.D") || operation.equals("ADD.S")) {
 				return "ADD";
@@ -139,10 +139,10 @@ public class instructionUnit {
 				Instruction instruction1 = null;
 				if (instruction.length == 3) {
 					if (type.equals("floating")) {
-						instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], "",
+						instruction1 = new FloatingInstruction(instruction[0], instruction[2], instruction[1], "",
 								InstructionSetup.getMemoryLatency());
 					} else if (type.equals("integer")) {
-						instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], "",
+						instruction1 = new IntegerInstruction(instruction[0], instruction[2], instruction[1], "",
 								InstructionSetup.getMemoryLatency());
 					}
 				} else {
@@ -200,14 +200,15 @@ public class instructionUnit {
 		if ((operation.equals("LW") || (operation.equals("LD")) || operation.equals("L.S") || (operation.equals("L.D")))
 				&& reservedLoad < AddressSetup.getLoadSize()) {
 			// Check if the load must wait for a store
-			System.out.println(operation);
+			// System.out.println(operation);
 
 			if (LoadStage.checkAddressClash(instruction)) {
 				// Stall the issuing if a clash is detected
 				return;
 			}
 			LoadStage.dispatchLoad(instruction);
-		} else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+		} else if ((operation.equals("SW") || operation.equals("SD") || operation.equals("S.S") || operation.equals("S.D"))
+				&& reservedStore < AddressSetup.getStoreSize()) {
 			// check for if the store must wait for a load or a store
 			if (StoreStage.checkAddressClash(instruction)) {
 				// Stall the issuing if a clash is detected
@@ -242,12 +243,21 @@ public class instructionUnit {
 			if (tmp.getBusy()) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
+
 				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) || !(tmp.isMiss()
 						&& tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty())) {
+
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
 
+					if (tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getMissPenalty()) {
+						// Once penalty is done, get from memory
+						String operation = instructionUnit.getInstructionOperation(instruction);
+						int numberOfBytes = (operation.equals("LW") || operation.equals("L.S")) ? 4 : 8;
+						Cache.loadFromMemoryToCache(Integer.parseInt(tmp.getAddress()), numberOfBytes);
+
+					}
 				}
 			}
 		}
@@ -258,10 +268,20 @@ public class instructionUnit {
 			if (tmp.getBusy() && tmp.getQ() == null) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
-				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency())) {
+
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) || !(tmp.isMiss()
+						&& tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty())) {
+
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
+
+					if (tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getMissPenalty()) {
+						// Once penalty is done, get from memory
+						String operation = instructionUnit.getInstructionOperation(instruction);
+						int numberOfBytes = (operation.equals("SW") || operation.equals("S.S")) ? 4 : 8;
+						Cache.loadFromMemoryToCache(Integer.parseInt(tmp.getAddress()), numberOfBytes);
+					}
 				}
 			}
 		}
@@ -338,17 +358,18 @@ public class instructionUnit {
 				// If this load is a miss, make sure it doesn't attempt to writeback before the
 				// penalty is over
 				writebackQueue.add(tmp);
-
 			}
 		}
 
 		for (int i = 0; i < storeTable.size(); i++) {
 			StoreStage tmp = Stage.storeTable.get(i);
-			if (tmp.getExecutionCycle() == InstructionSetup.getMemoryLatency() + 1) {
+			if ((!tmp.isMiss() && tmp.getExecutionCycle() == InstructionSetup.getMemoryLatency() + 1) || (tmp.isMiss()
+					&& tmp.getExecutionCycle() == InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty() + 1)) {
 				// Do writeback method that takes in the value and the RS name & code, what this
 				// does is add it to writeback queue
 
 				// Stores have their own buffer
+				storeQueue.add(tmp);
 			}
 		}
 
@@ -381,7 +402,6 @@ public class instructionUnit {
 		if (writebackQueue.size() != 0) {
 			Stage busWriter = writebackQueue.remove();
 			busWriter.setBusy(false);
-			busWriter.setExecutionCycle(busWriter.getExecutionCycle() + 10);
 			// Update instruction table
 			Instruction instruction = instructionTable.get(busWriter.getInstructionIndex());
 			instruction.setWriteResult(cycle + 1);
@@ -481,5 +501,21 @@ public class instructionUnit {
 			}
 
 		}
+
+		if (storeQueue.size() != 0) {
+			StoreStage writeToMemoryStage = storeQueue.remove();
+			writeToMemoryStage.setBusy(false);
+
+			Instruction instruction = instructionTable.get(writeToMemoryStage.getInstructionIndex());
+			instruction.setWriteResult(cycle + 1);
+			instructionTable.set(writeToMemoryStage.getInstructionIndex(), instruction);
+
+			writeToMemoryStage.setExecutionCycle(0);
+
+			Cache.storeToCache(writeToMemoryStage);
+
+			reservedStore--;
+		}
+
 	}
 }

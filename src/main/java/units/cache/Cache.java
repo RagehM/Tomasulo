@@ -73,10 +73,15 @@ public class Cache {
 		// and 2nd if that is the case) is
 		// available or not
 		// Check each cache block to determine if the target address is within it
+		PriorityQueue<Block> tmp = blocks;
+
 		int blockBaseAddress = ((int) (address / blockSize)) * blockSize;
 		int lastNeededAddress = address + numberOfBytes;
 		int secondBlockBaseAddress = (int) (lastNeededAddress / blockSize) * blockSize;
 		boolean[] out = new boolean[2];
+		for (int i = 0; i < out.length; i++) {
+			out[i] = true;
+		}
 
 		// Start by checking the existence of the first block
 		if (!blocks.stream().anyMatch(block -> block.getTag() == blockBaseAddress)) {
@@ -148,9 +153,9 @@ public class Cache {
 			// Loading 8 bytes the reconstructing them
 			byte[] byteList = new byte[8];
 			for (int i = 0; i < 8; i++) {
-				int blockBaseAddress = ((int) ((address + 1) / blockSize)) * blockSize;
+				int blockBaseAddress = ((int) ((address + i) / blockSize)) * blockSize;
 				// Get the correct block
-				byteList[i] = getBlockContainingAddress(address + i).getByte(address - blockBaseAddress);
+				byteList[i] = getBlockContainingAddress(address + i).getByte(address + i - blockBaseAddress);
 			}
 
 			return reconstructFromBytes(byteList, operation);
@@ -197,8 +202,37 @@ public class Cache {
 		throw new Exception("Whoops, something went wrong -> This is reconstructor");
 	}
 
-	public static void storeToCache(StoreStage storeStage) {
+	public static void storeToCache(StoreStage storeStage) throws Exception {
 		// TODO: Write this method
+		Instruction instruction = instructionTable.get(storeStage.getInstructionIndex());
+		String operation = getInstructionOperation(instruction);
+		int address = Integer.parseInt(storeStage.getAddress());
+
+		byte[] byteList;
+
+		switch (operation) {
+		case "SW":
+			byteList = ByteBuffer.allocate(4).putInt((int) storeStage.getV()).array();
+			break;
+		case "SD":
+			byteList = ByteBuffer.allocate(8).putLong((long) storeStage.getV()).array();
+			break;
+		case "S.S":
+			byteList = ByteBuffer.allocate(4).putFloat((float) storeStage.getV()).array();
+			break;
+		case "S.D":
+			byteList = ByteBuffer.allocate(8).putDouble(storeStage.getV()).array();
+			break;
+		default:
+			throw new Exception("EDA EDA EDA -> This is storeToCache");
+		}
+
+		for (int i = 0; i < byteList.length; i++) {
+			int blockBaseAddress = ((int) ((address + i) / blockSize)) * blockSize;
+			// Get the correct block
+			getBlockContainingAddress(address + i).setByte(address + i - blockBaseAddress, byteList[i]);
+		}
+
 	}
 
 	public String toString() {

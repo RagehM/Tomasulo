@@ -11,9 +11,9 @@ public class AddressStage extends Stage {
 		return isMiss;
 	}
 
-	public static boolean allTrue(boolean[] booleans) {
-		for (boolean b : booleans) {
-			if (!b) {
+	public static boolean allTrue(boolean[] bools) {
+		for (boolean bool : bools) {
+			if (!bool) {
 				return false;
 			}
 		}

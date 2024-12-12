@@ -7,6 +7,8 @@ import static units.instructionUnit.lastInstructionIndex;
 
 import instructions.Instruction;
 import units.FloatRegister;
+import units.instructionUnit;
+import units.cache.Cache;
 import units.stage.Stage;
 
 public class StoreStage extends AddressStage {
@@ -52,12 +54,13 @@ public class StoreStage extends AddressStage {
 
 		int firstUnusedIndex = Stage.getFirstEmptySlot(storeTable);
 		StoreStage storeStage = storeTable.get(firstUnusedIndex);
+		String operation = instructionUnit.getInstructionOperation(instruction);
 
 		// Replace in store Reservation Station
 		storeStage.setBusy(true);
-		storeStage.setAddress(instruction.getOperand1());
+		storeStage.setAddress(instruction.getDestination());
 
-		FloatRegister destinationRegister = getFloatRegister(instruction.getDestination());
+		FloatRegister destinationRegister = getFloatRegister(instruction.getOperand1());
 		double destinationValue = destinationRegister.getContent();
 
 		// check if the destination Register does not depend on any stage
@@ -72,6 +75,15 @@ public class StoreStage extends AddressStage {
 		storeStage.setIssueCycle(cycle + 1);
 		storeStage.setInstructionIndex(lastInstructionIndex);
 		storeTable.set(firstUnusedIndex, storeStage);
+		int numberOfBytes = (operation.equals("SW") || operation.equals("S.S")) ? 4 : 8;
+		boolean[] addressAvailability = Cache.checkAddressAvailability(Integer.parseInt(storeStage.getAddress()),
+				numberOfBytes);
+
+		boolean dataAvailable = AddressStage.allTrue(addressAvailability);
+
+		if (!dataAvailable) {
+			storeStage.setMiss(true);
+		}
 
 		// Update Instruction Table Entry
 		instruction.setIssue(cycle + 1);
@@ -82,13 +94,13 @@ public class StoreStage extends AddressStage {
 	public static boolean checkAddressClash(Instruction instruction) {
 
 		for (int i = 0; i < storeTable.size(); i++) {
-			if (storeTable.get(i).getBusy() && storeTable.get(i).getAddress() == instruction.getOperand1()) {
+			if (storeTable.get(i).getBusy() && storeTable.get(i).getAddress().equals(instruction.getDestination())) {
 				return true;
 			}
 		}
 
 		for (int i = 0; i < loadTable.size(); i++) {
-			if (loadTable.get(i).getBusy() && loadTable.get(i).getAddress() == instruction.getOperand1()) {
+			if (loadTable.get(i).getBusy() && loadTable.get(i).getAddress().equals(instruction.getDestination())) {
 				return true;
 			}
 		}

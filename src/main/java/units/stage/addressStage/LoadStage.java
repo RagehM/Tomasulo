@@ -58,12 +58,13 @@ public class LoadStage extends AddressStage {
 
 		loadTable.set(firstUnusedIndex, loadStage);
 		int numberOfBytes = (operation.equals("LW") || operation.equals("L.S")) ? 4 : 8;
-		boolean dataAvailable = AddressStage
-				.allTrue(Cache.checkAddressAvailability(Integer.parseInt(loadStage.getAddress()), numberOfBytes));
+		boolean[] addressAvailability = Cache.checkAddressAvailability(Integer.parseInt(loadStage.getAddress()),
+				numberOfBytes);
+
+		boolean dataAvailable = AddressStage.allTrue(addressAvailability);
 
 		if (!dataAvailable) {
 			loadStage.setMiss(true);
-			Cache.loadFromMemoryToCache(Integer.parseInt(loadStage.getAddress()), numberOfBytes);
 		}
 
 		// Update Register File Dependency
