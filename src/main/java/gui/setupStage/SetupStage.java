@@ -1,5 +1,7 @@
 package gui.setupStage;
 
+import static units.instructionUnit.printQueue;
+
 import gui.simulatingStage.SimulatingStage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,9 +14,9 @@ import units.Cache;
 import units.FloatRegister;
 import units.IntegerRegister;
 import units.instructionUnit;
-import static units.instructionUnit.printQueue;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
+import units.stage.aluStage.BranchStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
 import units.stage.aluStage.IntegerStage;
@@ -43,7 +45,7 @@ public class SetupStage {
 					CacheSetup.getBlockSize());
 
 			FloatRegister.initRegisterFile();
-			
+
 			IntegerRegister.initRegisterFile();
 
 			for (int i = 0; i < AddressSetup.getLoadSize(); i++) {
@@ -62,9 +64,11 @@ public class SetupStage {
 				new FloatingMultiplyStage(false, "", 0, 0, null, null);
 			}
 
-			for(int i = 0; i < AluSetup.getIntegerAdder(); i++) {
+			for (int i = 0; i < AluSetup.getIntegerAdder(); i++) {
 				new IntegerStage(false, "", 0, null, 0);
 			}
+
+			new BranchStage(false, "", 0);
 
 			Stage simStage = SimulatingStage.setupSimulatingStage(instructionUnit.instructionTable,
 					units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable,
