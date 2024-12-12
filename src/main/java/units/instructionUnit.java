@@ -128,6 +128,15 @@ public class instructionUnit {
 		return "not found";
 	}
 
+	public static String getLoadOrStore(String operation) {
+		if (operation.equals("LW") || operation.equals("LD") || operation.equals("L.S") || operation.equals("L.D")) {
+			return "load";
+		} else if (operation.equals("SW") || operation.equals("SD") || operation.equals("S.S") || operation.equals("S.D")) {
+			return "store";
+		}
+		return "not found";
+	}
+
 	public void parse() {
 		HashMap<String, Integer> labels = new HashMap<String, Integer>();
 		String filePath = "./src/main/java/instructions.txt";
@@ -138,43 +147,77 @@ public class instructionUnit {
 				String type = getInstructionType(instruction[0]);
 				Instruction instruction1 = null;
 				if (instruction.length == 3) {
-					if (type.equals("floating")) {
-						instruction1 = new FloatingInstruction(instruction[0], instruction[2], instruction[1], "",
-								InstructionSetup.getMemoryLatency());
-					} else if (type.equals("integer")) {
-						instruction1 = new IntegerInstruction(instruction[0], instruction[2], instruction[1], "",
-								InstructionSetup.getMemoryLatency());
+
+					String operation = getLoadOrStore(instruction[0]);
+					if(operation.equals("load")) {
+						if (type.equals("floating")) {
+							instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], "",
+							InstructionSetup.getMemoryLatency());
+						} 
+						else if (type.equals("integer")) {
+							instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], "",
+							InstructionSetup.getMemoryLatency());
+						}
 					}
-				} else {
+					else {
+						if (type.equals("floating")) {
+							instruction1 = new FloatingInstruction(instruction[0], instruction[2], instruction[1], "",
+							InstructionSetup.getMemoryLatency());
+						} 
+						else if (type.equals("integer")) {
+							instruction1 = new IntegerInstruction(instruction[0], instruction[2], instruction[1], "",
+							InstructionSetup.getMemoryLatency());
+						}
+					}
+				}
+				else {
 					if (instruction[0].contains(":")) {
 						type = getInstructionType(instruction[1]);
 						labels.put(instruction[0].substring(0, instruction[0].length() - 1), instructionTable.size());
-						System.out.println(labels.toString());
-						if (instruction.length == 4) {
-							if (type.equals("floating")) {
-								instruction1 = new FloatingInstruction(instruction[1], instruction[2], instruction[3], "",
-										InstructionSetup.getMemoryLatency());
-							} else if (type.equals("integer")) {
-								instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], "",
-										InstructionSetup.getMemoryLatency());
+						String operation = getLoadOrStore(instruction[1]);
+						if(instruction.length == 4) {
+							if(operation.equals("load")) {
+								if (type.equals("floating")) {
+									instruction1 = new FloatingInstruction(instruction[1], instruction[2], instruction[3], "",
+											InstructionSetup.getMemoryLatency());
+								} 
+								else if (type.equals("integer")) {
+									instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], "",
+											InstructionSetup.getMemoryLatency());
+								}
 							}
-						} else {
+							else {
+								if (type.equals("floating")) {
+									instruction1 = new FloatingInstruction(instruction[1], instruction[3], instruction[2], "",
+											InstructionSetup.getMemoryLatency());
+								} 
+								else if (type.equals("integer")) {
+									instruction1 = new IntegerInstruction(instruction[1], instruction[3], instruction[2], "",
+											InstructionSetup.getMemoryLatency());
+								}
+							}
+						}
+						else {
 							if (type.equals("floating")) {
 								instruction1 = new FloatingInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
 										InstructionSetup.getFloatingLatency());
-							} else if (type.equals("integer")) {
+							} 
+							else if (type.equals("integer")) {
 								instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
 										InstructionSetup.getIntegerLatency());
 							}
 						}
-					} else {
+					} 
+					else {
 						if (type.equals("floating")) {
 							instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 									InstructionSetup.getFloatingLatency());
-						} else if (type.equals("integer")) {
+						} 
+						else if (type.equals("integer")) {
 							instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 									InstructionSetup.getIntegerLatency());
-						} else if (type.equals("branch")) {
+						} 
+						else if (type.equals("branch")) {
 							instruction1 = new BranchInstruction(instruction[0], instruction[1], instruction[2],
 									labels.get(instruction[3]), InstructionSetup.getIntegerLatency());
 						}

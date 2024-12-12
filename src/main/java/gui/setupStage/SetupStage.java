@@ -1,7 +1,5 @@
 package gui.setupStage;
 
-import static units.instructionUnit.printQueue;
-
 import gui.simulatingStage.SimulatingStage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,8 +11,8 @@ import javafx.stage.Stage;
 import units.FloatRegister;
 import units.IntegerRegister;
 import units.MemoryBlocks;
-import units.instructionUnit;
 import units.cache.Cache;
+import units.instructionUnit;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.BranchStage;
@@ -43,7 +41,6 @@ public class SetupStage {
 		startButton.setOnAction(event -> {
 			instructionUnit instUnit = new instructionUnit();
 			instUnit.parse();
-			System.out.println(printQueue());
 			try {
 				Cache cache = new Cache(CacheSetup.getLatency(), CacheSetup.getMissPenalty(), CacheSetup.getCacheSize(),
 						CacheSetup.getBlockSize());
