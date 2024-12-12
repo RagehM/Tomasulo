@@ -64,6 +64,8 @@ public class instructionUnit {
 		return instructionQueue.size();
 	}
 
+	public static boolean isStalling  = false;
+
 	public static String printQueue() {
 		String result = "";
 		for (Instruction instruction : instructionQueue) {
@@ -187,7 +189,7 @@ public class instructionUnit {
 
 	public static void dispatch() {
 
-		if (Stage.getFirstEmptySlot(branchTable) == -1) {
+		if (Stage.getFirstEmptySlot(branchTable) == -1 ) {
 			return;
 		}
 
@@ -278,16 +280,24 @@ public class instructionUnit {
 				}
 			}
 		}
+		System.out.println("lastInstructionIndex: " + lastInstructionIndex);
 		// Branch Loop
 		for (int i = 0; i < branchTable.size(); i++) {
 			BranchStage tmp = Stage.branchTable.get(i);
 			if (tmp.getBusy() && tmp.getQj() == null && tmp.getQk() == null) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
-				if (!(tmp.getExecutionCycle() > InstructionSetup.getFloatingLatency())) {
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getIntegerLatency())) {
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}else{
+					if(tmp.produce()){
+						lastInstructionIndex = tmp.getAddress();
+					}
+
+
+					tmp.setBusy(false);
 				}
 			}
 		}
@@ -350,7 +360,8 @@ public class instructionUnit {
 			} else if (busWriter instanceof FloatingAdderStage) {
 				value = ((FloatingAdderStage) busWriter).produce();
 				reservedAdder--;
-			} else {
+			}
+			else {
 				value = ((FloatingMultiplyStage) busWriter).produce();
 				reservedMultiply--;
 			}
