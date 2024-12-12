@@ -5,8 +5,6 @@ import instructions.Instruction;
 import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
-
-import instructions.Instruction;
 import units.stage.Stage;
 
 public class LoadStage extends AddressStage {
@@ -71,8 +69,9 @@ public class LoadStage extends AddressStage {
 	}
 
 	public double produce() {
+		// to make the instruction be able to execute again after branch if available
+		this.setExecutionCycle(0);
 		System.out.println("METHOD NOT IMPLEMENTED YET: LOAD -> PRODUCE");
-
 		return -1;
 	}
 }

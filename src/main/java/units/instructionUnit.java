@@ -199,18 +199,24 @@ public class instructionUnit {
 		if ((operation.equals("LW") || (operation.equals("LD")) || operation.equals("L.S") || (operation.equals("L.D")))
 				&& reservedLoad < AddressSetup.getLoadSize()) {
 			LoadStage.dispatchLoad(instruction);
-		} else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+		} 
+		else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
 			StoreStage.dispatchStore(instruction);
-		} else if ((operation.equals("ADD") || operation.equals("SUB")) && reservedAdder < AluSetup.getFloatingAdder()) {
+		} 
+		else if ((operation.equals("ADD") || operation.equals("SUB")) && reservedAdder < AluSetup.getFloatingAdder()) {
 			FloatingAdderStage.dispatchAdder(instruction, operation);
-		} else if ((operation.equals("MUL") || operation.equals("DIV")) && reservedMultiply < AluSetup.getFloatingMul()) {
+		} 
+		else if ((operation.equals("MUL") || operation.equals("DIV")) && reservedMultiply < AluSetup.getFloatingMul()) {
 			FloatingMultiplyStage.dispatchMultiply(instruction, operation);
-		} else if ((operation.equals("BEQ") || operation.equals("BNE"))) {
+		} 
+		else if ((operation.equals("BEQ") || operation.equals("BNE"))) {
 			BranchStage.dispatchBranch(instruction, operation);
-		} else if ((operation.equals("DADDI") || operation.equals("DSUBI"))
+		} 
+		else if ((operation.equals("DADDI") || operation.equals("DSUBI"))
 				&& reservedInteger < AluSetup.getIntegerAdder()) {
 			IntegerStage.dispatchInteger(instruction, operation);
-		} else {
+		} 
+		else {
 			return;
 		}
 		lastInstructionIndex++;
@@ -278,7 +284,6 @@ public class instructionUnit {
 				}
 			}
 		}
-		System.out.println("lastInstructionIndex: " + lastInstructionIndex);
 		// Branch Loop
 		for (int i = 0; i < branchTable.size(); i++) {
 			BranchStage tmp = Stage.branchTable.get(i);
@@ -289,8 +294,10 @@ public class instructionUnit {
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
-				}else{
+				}
+				else{
 					if(tmp.produce()){
+						tmp.setExecutionCycle(0);
 						lastInstructionIndex = tmp.getAddress();
 					}
 					tmp.setBusy(false);
@@ -310,7 +317,6 @@ public class instructionUnit {
 				}
 			}
 		}
-
 	}
 
 	public static void writeBack() {
@@ -351,6 +357,13 @@ public class instructionUnit {
 			}
 		}
 
+		for(int i = 0; i < integerTable.size(); i++) {
+			IntegerStage tmp = integerTable.get(i);
+			if(tmp.getExecutionCycle() == InstructionSetup.getIntegerLatency() + 1) {
+				writebackQueue.add(tmp);
+			}
+		}
+
 		// Update RF and RS with the first stage from the queue
 		if (writebackQueue.size() != 0) {
 			Stage busWriter = writebackQueue.remove();
@@ -361,25 +374,39 @@ public class instructionUnit {
 			instruction.setWriteResult(cycle + 1);
 			instructionTable.set(busWriter.getInstructionIndex(), instruction);
 
-			double floatValue;
-
+			double floatValue = Float.MAX_VALUE;
+			long integerValue = Long.MAX_VALUE;
 			if (busWriter instanceof LoadStage) {
 				floatValue = ((LoadStage) busWriter).produce();
 				reservedLoad--;
-			} else if (busWriter instanceof FloatingAdderStage) {
+			} 
+			else if (busWriter instanceof FloatingAdderStage) {
 				floatValue = ((FloatingAdderStage) busWriter).produce();
 				reservedAdder--;
-			} else {
+			} 
+			else if(busWriter instanceof FloatingMultiplyStage) {
 				floatValue = ((FloatingMultiplyStage) busWriter).produce();
 				reservedMultiply--;
 			}
-
-			// set the output of integer stage to be written on the bus
-			long integerValue;
-			if((busWriter instanceof IntegerStage)) {
+			else {
 				integerValue = ((IntegerStage) busWriter).produce();
-				System.out.println(integerValue);
 				reservedInteger--;
+			}
+
+			// // set the output of integer stage to be written on the bus
+
+			// if((busWriter instanceof IntegerStage)) {
+
+			// }
+
+			for(int i = 0; i < integerRegisterTable.size(); i++) {
+				System.out.println(integerRegisterTable);
+				IntegerRegister register = integerRegisterTable.get(i);
+				// Check the name of the consumed stage
+				if(busWriter.equals(register.getQi())) {
+					register.setQi(null);
+					register.setContent(integerValue);
+				}
 			}
 
 			for (int i = 0; i < floatRegisterTable.size(); i++) {
@@ -420,6 +447,26 @@ public class instructionUnit {
 				if (busWriter.equals(stage.getQk())) {
 					stage.setQk(null);
 					stage.setVk(floatValue);
+				}
+			}
+
+			for(int i = 0; i < branchTable.size(); i++) {
+				BranchStage stage = branchTable.get(i);
+				if(busWriter.equals(stage.getQj())) {
+					stage.setQj(null);
+					stage.setVj(integerValue);
+				}
+				if(busWriter.equals(stage.getQk())) {
+					stage.setQk(null);
+					stage.setVk(integerValue);
+				}
+			}
+
+			for(int i = 0; i < integerTable.size(); i++) {
+				IntegerStage stage = integerTable.get(i);
+				if(busWriter.equals(stage.getQj())) {
+					stage.setQj(null);
+					stage.setVj(integerValue);
 				}
 			}
 

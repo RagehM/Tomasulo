@@ -72,6 +72,8 @@ public class IntegerStage extends Stage {
 	}
 
     public long produce() {
+        // to make the instruction be able to execute again after branch if available
+        this.setExecutionCycle(0);
         return this.getOp().contains("DSUBI") ? (this.getVj() - this.getImmediate()) : (this.getVj() + this.getImmediate());
     }
     
@@ -81,6 +83,7 @@ public class IntegerStage extends Stage {
 
 		integerStage.setBusy(true);
 		integerStage.setOp(operation);
+        integerStage.setImmediate(Long.parseLong(instruction.getOperand2()));
 
 		IntegerRegister operandRegister1 = getIntegerRegister(instruction.getOperand1());
 		long operandValue1 = operandRegister1.getContent();
@@ -98,7 +101,6 @@ public class IntegerStage extends Stage {
 		updateIntegerRegister(instruction.getDestination(), integerStage);
 		instruction.setIssue(cycle + 1);
 		integerTable.set(firstUnusedIndex, integerStage);
-		System.out.println(integerTable);
 		reservedInteger++;
 	}
 }

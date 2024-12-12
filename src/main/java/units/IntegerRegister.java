@@ -36,6 +36,10 @@ public class IntegerRegister {
 
 	public static ArrayList<IntegerRegister> integerRegisterTable = new ArrayList<IntegerRegister>();
 
+	public String toString() {
+		return this.register + this.Qi + this.content;
+	}
+
 	public IntegerRegister(IntegerStage qi, long content) {
 		this.Qi = qi;
 		this.content = content;

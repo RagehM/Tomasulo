@@ -10,9 +10,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import units.FloatRegister;
 import units.IntegerRegister;
+import units.cache.Cache;
 import units.instructionUnit;
 import static units.instructionUnit.printQueue;
-import units.cache.Cache;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.BranchStage;
@@ -69,9 +69,9 @@ public class SetupStage {
 			}
 
 			for (int i = 0; i < AluSetup.getIntegerAdder(); i++) {
-				new IntegerStage(false, "", (long)0, null, (long)0);
+				new IntegerStage(false, "", 0, null, 0);
 			}
-
+			
 			new BranchStage(false, "", 0);
 
 			Stage simStage = SimulatingStage.setupSimulatingStage(instructionUnit.instructionTable,

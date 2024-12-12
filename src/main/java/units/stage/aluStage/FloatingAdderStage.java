@@ -1,12 +1,11 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
+import instructions.Instruction;
+import units.FloatRegister;
 import static units.FloatRegister.getFloatRegister;
 import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.lastInstructionIndex;
-
-import instructions.Instruction;
-import units.FloatRegister;
 import units.stage.Stage;
 
 public class FloatingAdderStage extends AluStage {
@@ -29,6 +28,8 @@ public class FloatingAdderStage extends AluStage {
 	}
 
 	public double produce() {
+		// to make the instruction be able to execute again after branch if available
+		this.setExecutionCycle(0);
 		return this.getOp().contains("SUB") ? (this.getVj() - this.getVk()) : (this.getVj() + this.getVk());
 	}
 

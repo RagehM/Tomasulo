@@ -79,7 +79,7 @@ public class BranchStage extends AluStage {
 		if (operandRegister2.getQi() == null) {
 			branchStage.setVk(registerContent2);
 		} else {
-			branchStage.setQj(operandRegister2.getQi());
+			branchStage.setQk(operandRegister2.getQi());
 		}
 
 		branchStage.setIssueCycle(cycle + 1);
