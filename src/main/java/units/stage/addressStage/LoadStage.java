@@ -5,7 +5,10 @@ import instructions.Instruction;
 import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
+
+import instructions.Instruction;
 import units.stage.Stage;
+
 public class LoadStage extends AddressStage {
 	private String stage;
 	private static int number = 1;
@@ -41,7 +44,7 @@ public class LoadStage extends AddressStage {
 	}
 
 	public static void dispatchLoad(Instruction instruction) {
-			// Check if the load must wait for a store
+		// Check if the load must wait for a store
 		if (LoadStage.checkAddressClash(instruction)) {
 			// Stall the issuing if a clash is detected
 			return;
@@ -67,8 +70,9 @@ public class LoadStage extends AddressStage {
 		reservedLoad++;
 	}
 
-	public float produce() {
+	public double produce() {
 		System.out.println("METHOD NOT IMPLEMENTED YET: LOAD -> PRODUCE");
+
 		return -1;
 	}
 }

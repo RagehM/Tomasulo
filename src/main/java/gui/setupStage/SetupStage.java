@@ -8,11 +8,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import units.Cache;
 import units.FloatRegister;
 import units.IntegerRegister;
 import units.instructionUnit;
 import static units.instructionUnit.printQueue;
+import units.cache.Cache;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
 import units.stage.aluStage.BranchStage;
@@ -21,6 +21,9 @@ import units.stage.aluStage.FloatingMultiplyStage;
 import units.stage.aluStage.IntegerStage;
 
 public class SetupStage {
+
+	public static Cache cache;
+
 	public static Stage setupMainStage() {
 		Stage stage = new Stage();
 		BorderPane borderPane = new BorderPane();
@@ -39,10 +42,12 @@ public class SetupStage {
 			instructionUnit instUnit = new instructionUnit();
 			instUnit.parse();
 			System.out.println(printQueue());
-
-			Cache cache = new Cache(CacheSetup.getLatency(), CacheSetup.getMissPenalty(), CacheSetup.getCacheSize(),
-					CacheSetup.getBlockSize());
-
+			try {
+				Cache cache = new Cache(CacheSetup.getLatency(), CacheSetup.getMissPenalty(), CacheSetup.getCacheSize(),
+						CacheSetup.getBlockSize());
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
 			FloatRegister.initRegisterFile();
 
 			IntegerRegister.initRegisterFile();
@@ -64,7 +69,7 @@ public class SetupStage {
 			}
 
 			for (int i = 0; i < AluSetup.getIntegerAdder(); i++) {
-				new IntegerStage(false, "", 0, null, 0);
+				new IntegerStage(false, "", (long)0, null, (long)0);
 			}
 
 			new BranchStage(false, "", 0);

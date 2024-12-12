@@ -9,11 +9,12 @@ import static units.stage.Stage.integerTable;
 import static units.stage.Stage.loadTable;
 import static units.stage.Stage.multiplyTable;
 import static units.stage.Stage.reservedAdder;
+import static units.stage.Stage.reservedInteger;
 import static units.stage.Stage.reservedLoad;
 import static units.stage.Stage.reservedMultiply;
 import static units.stage.Stage.reservedStore;
 import static units.stage.Stage.storeTable;
-import static units.stage.Stage.reservedInteger;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -87,23 +88,21 @@ public class instructionUnit {
 		}
 	}
 
-	private static String getInstructionOperation(Instruction instruction) {
+	public static String getInstructionOperation(Instruction instruction) {
 		if (instruction instanceof IntegerInstruction) {
 			String operation = ((IntegerInstruction) instruction).getOperation();
-			if (operation.equals("LW") || (operation.equals("LD")) ) {
-				return "load";
-			} 
-			else if (operation.equals("SW") || operation.equals("SD") || operation.equals("S.S") || operation.equals("S.D")) {
+			if (operation.equals("LW") || (operation.equals("LD"))) {
+				return operation;
+			} else if (operation.equals("SW") || operation.equals("SD") || operation.equals("S.S")
+					|| operation.equals("S.D")) {
 				return "store";
-			}
-			else if(operation.equals("DADDI") || operation.equals("DSUBI")) {
+			} else if (operation.equals("DADDI") || operation.equals("DSUBI")) {
 				return operation;
 			}
-		} 
-		else if (instruction instanceof FloatingInstruction) {
+		} else if (instruction instanceof FloatingInstruction) {
 			String operation = ((FloatingInstruction) instruction).getOperation();
 			if (operation.equals("L.S") || (operation.equals("L.D"))) {
-				return "load";
+				return operation;
 			} else if (operation.equals("SW") || operation.equals("SD") || operation.equals("S.S")
 					|| operation.equals("S.D")) {
 				return "store";
@@ -143,8 +142,7 @@ public class instructionUnit {
 						instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], "",
 								InstructionSetup.getMemoryLatency());
 					}
-				} 
-				else {
+				} else {
 					if (instruction[0].contains(":")) {
 						type = getInstructionType(instruction[1]);
 						labels.put(instruction[0].substring(0, instruction[0].length() - 1), instructionTable.size());
@@ -196,7 +194,8 @@ public class instructionUnit {
 		Instruction instruction = (Instruction) instructionTable.get(lastInstructionIndex);
 		String operation = getInstructionOperation(instruction);
 
-		if (operation.equals("load") && reservedLoad < AddressSetup.getLoadSize()) {
+		if ((operation.equals("LW") || (operation.equals("LD")) || operation.equals("L.S") || (operation.equals("L.D")))
+				&& reservedLoad < AddressSetup.getLoadSize()) {
 			LoadStage.dispatchLoad(instruction);
 		} else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
 			StoreStage.dispatchStore(instruction);
@@ -206,11 +205,10 @@ public class instructionUnit {
 			FloatingMultiplyStage.dispatchMultiply(instruction, operation);
 		} else if ((operation.equals("BEQ") || operation.equals("BNE"))) {
 			BranchStage.dispatchBranch(instruction, operation);
-		}
-		else if ( ( operation.equals("DADDI") || operation.equals("DSUBI") ) && reservedInteger < AluSetup.getIntegerAdder()) {
+		} else if ((operation.equals("DADDI") || operation.equals("DSUBI"))
+				&& reservedInteger < AluSetup.getIntegerAdder()) {
 			IntegerStage.dispatchInteger(instruction, operation);
-		}
-		else {
+		} else {
 			return;
 		}
 		lastInstructionIndex++;
@@ -268,6 +266,19 @@ public class instructionUnit {
 		// Multiplier Loop
 		for (int i = 0; i < Stage.multiplyTable.size(); i++) {
 			FloatingMultiplyStage tmp = Stage.multiplyTable.get(i);
+			if (tmp.getBusy() && tmp.getQj() == null && tmp.getQk() == null) {
+				// If it is busy, increment its execution counter
+				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getFloatingLatency())) {
+					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
+					instruction.setExecutionComplete(cycle + 1);
+					instructionTable.set(tmp.getInstructionIndex(), instruction);
+				}
+			}
+		}
+		// Branch Loop
+		for (int i = 0; i < branchTable.size(); i++) {
+			BranchStage tmp = Stage.branchTable.get(i);
 			if (tmp.getBusy() && tmp.getQj() == null && tmp.getQk() == null) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
@@ -342,8 +353,8 @@ public class instructionUnit {
 			instruction.setWriteResult(cycle + 1);
 			instructionTable.set(busWriter.getInstructionIndex(), instruction);
 
-			// set the output of float stage to be written on the bus 
-			float floatValue;
+			double value;
+
 			if (busWriter instanceof LoadStage) {
 				floatValue = ((LoadStage) busWriter).produce();
 				reservedLoad--;

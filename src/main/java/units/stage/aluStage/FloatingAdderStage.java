@@ -1,12 +1,14 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import instructions.Instruction;
-import units.FloatRegister;
 import static units.FloatRegister.getFloatRegister;
 import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.lastInstructionIndex;
+
+import instructions.Instruction;
+import units.FloatRegister;
 import units.stage.Stage;
+
 public class FloatingAdderStage extends AluStage {
 	private String stage;
 	private static int number = 1;
@@ -15,7 +17,7 @@ public class FloatingAdderStage extends AluStage {
 		return stage;
 	}
 
-	public FloatingAdderStage(Boolean busy, String op, float Vj, float Vk, Stage Qj, Stage Qk) {
+	public FloatingAdderStage(Boolean busy, String op, double Vj, double Vk, Stage Qj, Stage Qk) {
 		super(busy, op, Vj, Vk, Qj, Qk);
 		this.stage = "A" + number;
 		number++;
@@ -26,7 +28,7 @@ public class FloatingAdderStage extends AluStage {
 		return this.stage;
 	}
 
-	public float produce() {
+	public double produce() {
 		return this.getOp().contains("SUB") ? (this.getVj() - this.getVk()) : (this.getVj() + this.getVk());
 	}
 
@@ -38,26 +40,24 @@ public class FloatingAdderStage extends AluStage {
 		adderStage.setOp(operation);
 
 		FloatRegister operandRegister1 = getFloatRegister(instruction.getOperand1());
-		float operandValue1 = operandRegister1.getContent();
+		double operandValue1 = operandRegister1.getContent();
 
 		// check if that register does not depend on any other stage
 		if (operandRegister1.getQi() == null) {
 			// if yes then set Vj to be the content of that register
 			adderStage.setVj(operandValue1);
-		}
-		else {
+		} else {
 			// else make the first operand depends on that stage
 			adderStage.setQj(operandRegister1.getQi());
 		}
 
 		FloatRegister operandRegister2 = getFloatRegister(instruction.getOperand2());
-		float operandValue2 = operandRegister2.getContent();
+		double operandValue2 = operandRegister2.getContent();
 		// check if that register does not depend on any other stage
 		if (operandRegister2.getQi() == null) {
 			// if yes then set Vk to be the content of that register
 			adderStage.setVk(operandValue2);
-		}
-		else {
+		} else {
 			// else make the second operand depends on that stage
 			adderStage.setQk(operandRegister2.getQi());
 		}

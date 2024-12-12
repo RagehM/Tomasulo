@@ -1,10 +1,11 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
+import static units.instructionUnit.lastInstructionIndex;
+
 import instructions.BranchInstruction;
 import instructions.Instruction;
 import units.IntegerRegister;
-import static units.instructionUnit.lastInstructionIndex;
 
 public class BranchStage extends AluStage {
 	private String stage;
@@ -16,20 +17,21 @@ public class BranchStage extends AluStage {
 
 	public String getStage() {
 		return stage;
-}
+	}
 
 	public BranchStage(boolean busy, String op, int address) {
 		super(busy, op, 0, 0, null, null);
 		this.stage = "B1";
 		this.address = address;
-		if (branchTable.size() != 0)
-			branchTable.set(0, this);
-		else
+		if (branchTable.size() != 0) {
+			branchTable.remove(0);
+			branchTable.add(this);
+		} else
 			branchTable.add(this);
 	}
-	
+
 	public String toString() {
-		return this.stage;
+		return (this.stage + getOp() + getVj() + getVk() + getQj() + getQk() + address);
 	}
 
 	public static void dispatchBranch(Instruction instruction, String operation) {
@@ -40,9 +42,9 @@ public class BranchStage extends AluStage {
 		BranchStage branchStage = new BranchStage(true, operation, branchInstruction.getAddress());
 
 		IntegerRegister operandRegister1 = IntegerRegister.getRegister(instruction.getOperand1());
-		int registerContent1 = operandRegister1.getContent();
+		long registerContent1 = operandRegister1.getContent();
 		IntegerRegister operandRegister2 = IntegerRegister.getRegister(instruction.getOperand2());
-		int registerContent2 = operandRegister2.getContent();
+		long registerContent2 = operandRegister2.getContent();
 
 		if (operandRegister1.getQi() == null) {
 			branchStage.setVj(registerContent1);
@@ -60,6 +62,8 @@ public class BranchStage extends AluStage {
 		branchStage.setInstructionIndex(lastInstructionIndex);
 
 		instruction.setIssue(cycle + 1);
+
+		// System.out.println(branchTable.get(0));
 
 		// TODO: If it breaks, this is the issue
 	}

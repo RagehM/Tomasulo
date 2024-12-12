@@ -6,9 +6,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import units.Cache;
 import units.FloatRegister;
 import units.MemoryCell;
+import units.cache.Cache;
 
 public class MemoryTable {
     public VBox createTable(){

@@ -40,3 +40,4 @@ build/
 .idea/misc.xml
 nbactions.xml
 pom.xml
+.idea/vcs.xml

@@ -1,27 +1,29 @@
 package units.stage.addressStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import instructions.Instruction;
-import units.FloatRegister;
 import static units.FloatRegister.getFloatRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
+
+import instructions.Instruction;
+import units.FloatRegister;
 import units.stage.Stage;
+
 public class StoreStage extends AddressStage {
 	private String stage;
 	private static int number = 1;
-	private int V;
+	private long V;
 	private Stage Q;
 
 	public String getStage() {
 		return stage;
 	}
 
-	public float getV() {
+	public long getV() {
 		return V;
 	}
 
-	public void setV(int v) {
+	public void setV(long v) {
 		V = v;
 	}
 
@@ -33,7 +35,7 @@ public class StoreStage extends AddressStage {
 		Q = q;
 	}
 
-	public StoreStage(Boolean busy, String address, int V, Stage Q) {
+	public StoreStage(Boolean busy, String address, long V, Stage Q) {
 		super(busy, address);
 		this.stage = "S" + number;
 		number++;
@@ -61,14 +63,13 @@ public class StoreStage extends AddressStage {
 		storeStage.setAddress(instruction.getOperand1());
 
 		FloatRegister destinationRegister = getFloatRegister(instruction.getDestination());
-		float destinationValue = destinationRegister.getContent();
+		double destinationValue = destinationRegister.getContent();
 
-		//check if the destination Register does not depend on any stage
+		// check if the destination Register does not depend on any stage
 		if (destinationRegister.getQi() == null) {
 			// if yes then set the value to be the content of the register
 			storeStage.setV((int) destinationValue);
-		}
-		else {
+		} else {
 			// else make the store depends on that stage
 			storeStage.setQ(destinationRegister.getQi());
 		}
