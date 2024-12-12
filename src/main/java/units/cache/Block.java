@@ -1,11 +1,8 @@
 package units.cache;
 
-import static gui.simulatingStage.Simulate.cycle;
-
 import gui.setupStage.CacheSetup;
-import gui.setupStage.InstructionSetup;
 
-public class Block {
+public class Block implements Comparable {
 
 	private byte[] bytes = new byte[CacheSetup.getBlockSize()];
 	private int tag;
@@ -19,12 +16,6 @@ public class Block {
 	public byte getByte(int index) {
 		return bytes[index];
 		// used with load only
-	}
-
-	public void replaceBlock(byte[] newBytes, int tag) {
-		this.bytes = newBytes;
-		this.tag = tag;
-		this.lastUsedCycle = cycle + 1 + InstructionSetup.getMemoryLatency();
 	}
 
 	public int getTag() {
@@ -46,5 +37,12 @@ public class Block {
 	public Block(int tag) {
 		this.lastUsedCycle = 0;
 		this.tag = 0;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		Block block = (Block) o;
+		return Integer.compare(this.lastUsedCycle, block.lastUsedCycle);
 	}
 }
