@@ -1,14 +1,18 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import static units.instructionUnit.lastInstructionIndex;
-
 import instructions.BranchInstruction;
 import instructions.Instruction;
 import units.IntegerRegister;
+import static units.instructionUnit.lastInstructionIndex;
 
 public class BranchStage extends AluStage {
 	private String stage;
+
+	public void setAddress(int address) {
+		this.address = address;
+	}
+
 	private int address;
 
 	public int getAddress() {
@@ -31,15 +35,35 @@ public class BranchStage extends AluStage {
 	}
 
 	public String toString() {
-		return (this.stage + getOp() + getVj() + getVk() + getQj() + getQk() + address);
+		return ((this.stage + getOp() + getVj() + getVk() + getQj() + getQk() + address)+" " +this.busy+" "+ this.address);
 	}
+
+	public boolean produce() {
+		if(this.getOp().contains("BNE")){
+			if((this.getVj()!=this.getVk())){
+				return true;
+			}
+		}else{
+			if((this.getVj()==this.getVk())){
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	public static void dispatchBranch(Instruction instruction, String operation) {
 		// Branch stalls the whole pipeline until complete, therefore, no need to check
 		// for available slots for dispatch
 		// The branch RS always has 1 slot
 		BranchInstruction branchInstruction = (BranchInstruction) instruction;
-		BranchStage branchStage = new BranchStage(true, operation, branchInstruction.getAddress());
+		BranchStage branchStage = branchTable.get(0);
+
+		if(branchStage.getBusy()){
+			return;
+		}
+		branchStage.setBusy(true);
+		branchStage.setAddress(branchInstruction.getAddress());
 
 		IntegerRegister operandRegister1 = IntegerRegister.getRegister(instruction.getOperand1());
 		long registerContent1 = operandRegister1.getContent();
@@ -63,8 +87,10 @@ public class BranchStage extends AluStage {
 
 		instruction.setIssue(cycle + 1);
 
-		// System.out.println(branchTable.get(0));
 
+		System.out.println(branchTable.toString());
+		System.out.println(branchStage.toString());
+		branchTable.set(0, branchStage);
 		// TODO: If it breaks, this is the issue
 	}
 }
