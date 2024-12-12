@@ -12,18 +12,18 @@ import units.stage.Stage;
 public class StoreStage extends AddressStage {
 	private String stage;
 	private static int number = 1;
-	private long V;
+	private double V;
 	private Stage Q;
 
 	public String getStage() {
 		return stage;
 	}
 
-	public long getV() {
+	public double getV() {
 		return V;
 	}
 
-	public void setV(long v) {
+	public void setV(double v) {
 		V = v;
 	}
 
@@ -35,7 +35,7 @@ public class StoreStage extends AddressStage {
 		Q = q;
 	}
 
-	public StoreStage(Boolean busy, String address, long V, Stage Q) {
+	public StoreStage(Boolean busy, String address, double V, Stage Q) {
 		super(busy, address);
 		this.stage = "S" + number;
 		number++;
