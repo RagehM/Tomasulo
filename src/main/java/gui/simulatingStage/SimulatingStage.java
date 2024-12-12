@@ -78,7 +78,12 @@ public class SimulatingStage {
 		Button nextCycle = new Button("next Cycle ->");
 
 		nextCycle.setOnAction(e -> {
-			Simulate.Simulate();
+			try {
+				Simulate.Simulate();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			AddressTable.loadTableView.refresh();
 			AddressTable.storeTableView.refresh();
 			AluFloatTable.adderTableView.refresh();

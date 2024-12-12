@@ -49,11 +49,6 @@ public class StoreStage extends AddressStage {
 	}
 
 	public static void dispatchStore(Instruction instruction) {
-		// check for if the store must wait for a load or a store
-		if (StoreStage.checkAddressClash(instruction)) {
-			// Stall the issuing if a clash is detected
-			return;
-		}
 
 		int firstUnusedIndex = Stage.getFirstEmptySlot(storeTable);
 		StoreStage storeStage = storeTable.get(firstUnusedIndex);

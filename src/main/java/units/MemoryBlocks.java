@@ -1,29 +1,34 @@
 package units;
 
-import java.util.ArrayList;
 import units.cache.Block;
 
 public class MemoryBlocks {
-    private Block[] memory;
-    private int blockSize;
+	private static Block[] memory;
+	private static int blockSize;
+	private static int memorySize;
 
-    public MemoryBlocks(int memorySize, int blockSize) {
-        this.blockSize = blockSize;
-        if(memorySize % blockSize != 0){
-            throw new IllegalArgumentException("Memory Size Should be divisible by ");
-        }
-        int memorySizeBlocks = memorySize / blockSize;
-        memory = new Block[memorySizeBlocks];
+	public MemoryBlocks(int memorySize) {
+		MemoryBlocks.memorySize = memorySize;
+	}
 
-        for(int i = 0; i < memorySizeBlocks; i++){
-            memory[i] = new Block(i*blockSize);
-        }
-    }
+	public static void init(int blockSize) {
+		MemoryBlocks.blockSize = blockSize;
+		if (memorySize % blockSize != 0) {
+			throw new IllegalArgumentException("Memory Size Should be divisible by ");
+		}
+		int memorySizeBlocks = memorySize / blockSize;
+		memory = new Block[memorySizeBlocks];
 
-    public Block readFromMem(int tag){
-        return memory[tag];
-    }
-    public void writeOnMem(Block block){
-        memory[block.getTag()] = block;
-    }
+		for (int i = 0; i < memorySizeBlocks; i++) {
+			memory[i] = new Block(i * blockSize);
+		}
+	}
+
+	public Block readFromMem(int tag) {
+		return memory[tag / blockSize];
+	}
+
+	public void writeOnMem(Block block) {
+		memory[block.getTag()] = block;
+	}
 }

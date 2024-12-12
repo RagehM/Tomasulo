@@ -26,6 +26,7 @@ import java.util.Queue;
 
 import gui.setupStage.AddressSetup;
 import gui.setupStage.AluSetup;
+import gui.setupStage.CacheSetup;
 import gui.setupStage.InstructionSetup;
 import instructions.BranchInstruction;
 import instructions.FloatingInstruction;
@@ -67,7 +68,7 @@ public class instructionUnit {
 		return instructionQueue.size();
 	}
 
-	public static boolean isStalling  = false;
+	public static boolean isStalling = false;
 
 	public static String printQueue() {
 		String result = "";
@@ -189,7 +190,7 @@ public class instructionUnit {
 
 	public static void dispatch() {
 
-		if (Stage.getFirstEmptySlot(branchTable) == -1 ) {
+		if (Stage.getFirstEmptySlot(branchTable) == -1) {
 			return;
 		}
 
@@ -198,25 +199,31 @@ public class instructionUnit {
 
 		if ((operation.equals("LW") || (operation.equals("LD")) || operation.equals("L.S") || (operation.equals("L.D")))
 				&& reservedLoad < AddressSetup.getLoadSize()) {
+			// Check if the load must wait for a store
+			System.out.println(operation);
+
+			if (LoadStage.checkAddressClash(instruction)) {
+				// Stall the issuing if a clash is detected
+				return;
+			}
 			LoadStage.dispatchLoad(instruction);
-		} 
-		else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+		} else if (operation.equals("store") && reservedStore < AddressSetup.getStoreSize()) {
+			// check for if the store must wait for a load or a store
+			if (StoreStage.checkAddressClash(instruction)) {
+				// Stall the issuing if a clash is detected
+				return;
+			}
 			StoreStage.dispatchStore(instruction);
-		} 
-		else if ((operation.equals("ADD") || operation.equals("SUB")) && reservedAdder < AluSetup.getFloatingAdder()) {
+		} else if ((operation.equals("ADD") || operation.equals("SUB")) && reservedAdder < AluSetup.getFloatingAdder()) {
 			FloatingAdderStage.dispatchAdder(instruction, operation);
-		} 
-		else if ((operation.equals("MUL") || operation.equals("DIV")) && reservedMultiply < AluSetup.getFloatingMul()) {
+		} else if ((operation.equals("MUL") || operation.equals("DIV")) && reservedMultiply < AluSetup.getFloatingMul()) {
 			FloatingMultiplyStage.dispatchMultiply(instruction, operation);
-		} 
-		else if ((operation.equals("BEQ") || operation.equals("BNE"))) {
+		} else if ((operation.equals("BEQ") || operation.equals("BNE"))) {
 			BranchStage.dispatchBranch(instruction, operation);
-		} 
-		else if ((operation.equals("DADDI") || operation.equals("DSUBI"))
+		} else if ((operation.equals("DADDI") || operation.equals("DSUBI"))
 				&& reservedInteger < AluSetup.getIntegerAdder()) {
 			IntegerStage.dispatchInteger(instruction, operation);
-		} 
-		else {
+		} else {
 			return;
 		}
 		lastInstructionIndex++;
@@ -231,14 +238,16 @@ public class instructionUnit {
 
 		// Load Loop
 		for (int i = 0; i < Stage.loadTable.size(); i++) {
-			Stage tmp = Stage.loadTable.get(i);
+			LoadStage tmp = Stage.loadTable.get(i);
 			if (tmp.getBusy()) {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
-				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency())) {
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency()) || !(tmp.isMiss()
+						&& tmp.getExecutionCycle() > InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty())) {
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
+
 				}
 			}
 		}
@@ -294,9 +303,8 @@ public class instructionUnit {
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
-				}
-				else{
-					if(tmp.produce()){
+				} else {
+					if (tmp.produce()) {
 						tmp.setExecutionCycle(0);
 						lastInstructionIndex = tmp.getAddress();
 					}
@@ -306,11 +314,11 @@ public class instructionUnit {
 		}
 
 		// Integer Loop
-		for(int i = 0; i < integerTable.size(); i++) {
+		for (int i = 0; i < integerTable.size(); i++) {
 			IntegerStage tmp = integerTable.get(i);
-			if(tmp.getBusy() && tmp.getQj() == null) {
+			if (tmp.getBusy() && tmp.getQj() == null) {
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
-				if(!(tmp.getExecutionCycle() > InstructionSetup.getIntegerLatency())) {
+				if (!(tmp.getExecutionCycle() > InstructionSetup.getIntegerLatency())) {
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
@@ -319,13 +327,18 @@ public class instructionUnit {
 		}
 	}
 
-	public static void writeBack() {
+	public static void writeBack() throws Exception {
 		for (int i = 0; i < loadTable.size(); i++) {
-			Stage tmp = Stage.loadTable.get(i);
-			if (tmp.getExecutionCycle() == InstructionSetup.getMemoryLatency() + 1) {
+			LoadStage tmp = Stage.loadTable.get(i);
+			if ((!tmp.isMiss() && tmp.getExecutionCycle() == InstructionSetup.getMemoryLatency() + 1) || (tmp.isMiss()
+					&& tmp.getExecutionCycle() == InstructionSetup.getMemoryLatency() + CacheSetup.getMissPenalty() + 1)) {
 				// Do writeback method that takes in the value and the RS name & code, what this
 				// does is add it to writeback queue
+
+				// If this load is a miss, make sure it doesn't attempt to writeback before the
+				// penalty is over
 				writebackQueue.add(tmp);
+
 			}
 		}
 
@@ -357,9 +370,9 @@ public class instructionUnit {
 			}
 		}
 
-		for(int i = 0; i < integerTable.size(); i++) {
+		for (int i = 0; i < integerTable.size(); i++) {
 			IntegerStage tmp = integerTable.get(i);
-			if(tmp.getExecutionCycle() == InstructionSetup.getIntegerLatency() + 1) {
+			if (tmp.getExecutionCycle() == InstructionSetup.getIntegerLatency() + 1) {
 				writebackQueue.add(tmp);
 			}
 		}
@@ -379,16 +392,13 @@ public class instructionUnit {
 			if (busWriter instanceof LoadStage) {
 				floatValue = ((LoadStage) busWriter).produce();
 				reservedLoad--;
-			} 
-			else if (busWriter instanceof FloatingAdderStage) {
+			} else if (busWriter instanceof FloatingAdderStage) {
 				floatValue = ((FloatingAdderStage) busWriter).produce();
 				reservedAdder--;
-			} 
-			else if(busWriter instanceof FloatingMultiplyStage) {
+			} else if (busWriter instanceof FloatingMultiplyStage) {
 				floatValue = ((FloatingMultiplyStage) busWriter).produce();
 				reservedMultiply--;
-			}
-			else {
+			} else {
 				integerValue = ((IntegerStage) busWriter).produce();
 				reservedInteger--;
 			}
@@ -399,11 +409,11 @@ public class instructionUnit {
 
 			// }
 
-			for(int i = 0; i < integerRegisterTable.size(); i++) {
-				System.out.println(integerRegisterTable);
+			for (int i = 0; i < integerRegisterTable.size(); i++) {
+				// System.out.println(integerRegisterTable);
 				IntegerRegister register = integerRegisterTable.get(i);
 				// Check the name of the consumed stage
-				if(busWriter.equals(register.getQi())) {
+				if (busWriter.equals(register.getQi())) {
 					register.setQi(null);
 					register.setContent(integerValue);
 				}
@@ -450,21 +460,21 @@ public class instructionUnit {
 				}
 			}
 
-			for(int i = 0; i < branchTable.size(); i++) {
+			for (int i = 0; i < branchTable.size(); i++) {
 				BranchStage stage = branchTable.get(i);
-				if(busWriter.equals(stage.getQj())) {
+				if (busWriter.equals(stage.getQj())) {
 					stage.setQj(null);
 					stage.setVj(integerValue);
 				}
-				if(busWriter.equals(stage.getQk())) {
+				if (busWriter.equals(stage.getQk())) {
 					stage.setQk(null);
 					stage.setVk(integerValue);
 				}
 			}
 
-			for(int i = 0; i < integerTable.size(); i++) {
+			for (int i = 0; i < integerTable.size(); i++) {
 				IntegerStage stage = integerTable.get(i);
-				if(busWriter.equals(stage.getQj())) {
+				if (busWriter.equals(stage.getQj())) {
 					stage.setQj(null);
 					stage.setVj(integerValue);
 				}

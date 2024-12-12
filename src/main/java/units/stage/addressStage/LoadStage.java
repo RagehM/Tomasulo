@@ -1,10 +1,13 @@
 package units.stage.addressStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import instructions.Instruction;
 import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
+
+import instructions.Instruction;
+import units.instructionUnit;
+import units.cache.Cache;
 import units.stage.Stage;
 
 public class LoadStage extends AddressStage {
@@ -42,25 +45,29 @@ public class LoadStage extends AddressStage {
 	}
 
 	public static void dispatchLoad(Instruction instruction) {
-		// Check if the load must wait for a store
-		if (LoadStage.checkAddressClash(instruction)) {
-			// Stall the issuing if a clash is detected
-			return;
-		}
 
 		int firstUnusedIndex = Stage.getFirstEmptySlot(loadTable);
-		LoadStage loadstage = loadTable.get(firstUnusedIndex);
+		LoadStage loadStage = loadTable.get(firstUnusedIndex);
+		String operation = instructionUnit.getInstructionOperation(instruction);
 
 		// Replace in load Reservation Station
-		loadstage.setBusy(true);
-		loadstage.setAddress(instruction.getOperand1());
-		loadstage.setIssueCycle(cycle + 1);
-		loadstage.setInstructionIndex(lastInstructionIndex);
+		loadStage.setBusy(true);
+		loadStage.setAddress(instruction.getOperand1());
+		loadStage.setIssueCycle(cycle + 1);
+		loadStage.setInstructionIndex(lastInstructionIndex);
 
-		loadTable.set(firstUnusedIndex, loadstage);
+		loadTable.set(firstUnusedIndex, loadStage);
+		int numberOfBytes = (operation.equals("LW") || operation.equals("L.S")) ? 4 : 8;
+		boolean dataAvailable = AddressStage
+				.allTrue(Cache.checkAddressAvailability(Integer.parseInt(loadStage.getAddress()), numberOfBytes));
+
+		if (!dataAvailable) {
+			loadStage.setMiss(true);
+			Cache.loadFromMemoryToCache(Integer.parseInt(loadStage.getAddress()), numberOfBytes);
+		}
 
 		// Update Register File Dependency
-		updateFloatRegister(instruction.getDestination(), loadstage); // to be checked again
+		updateFloatRegister(instruction.getDestination(), loadStage); // to be checked again
 
 		// Update Instruction Table Entry
 		instruction.setIssue(cycle + 1);
@@ -68,10 +75,10 @@ public class LoadStage extends AddressStage {
 		reservedLoad++;
 	}
 
-	public double produce() {
+	public double produce() throws Exception {
 		// to make the instruction be able to execute again after branch if available
 		this.setExecutionCycle(0);
-		System.out.println("METHOD NOT IMPLEMENTED YET: LOAD -> PRODUCE");
-		return -1;
+
+		return Cache.loadFromCache(this);
 	}
 }

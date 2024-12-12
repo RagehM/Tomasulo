@@ -11,6 +11,15 @@ public class AddressStage extends Stage {
 		return isMiss;
 	}
 
+	public static boolean allTrue(boolean[] booleans) {
+		for (boolean b : booleans) {
+			if (!b) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void setMiss(boolean isMiss) {
 		this.isMiss = isMiss;
 	}

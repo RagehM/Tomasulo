@@ -1,8 +1,10 @@
 package units.cache;
 
+import static gui.setupStage.SetupStage.memory;
 import static gui.simulatingStage.Simulate.cycle;
 import static units.instructionUnit.getInstructionOperation;
 import static units.instructionUnit.instructionTable;
+
 import java.nio.ByteBuffer;
 import java.util.PriorityQueue;
 
@@ -45,6 +47,8 @@ public class Cache {
 			return;
 		}
 
+		System.out.println("Initializing Cache");
+
 		Cache.hitLatency = hitLatency;
 		Cache.missPenalty = missPenalty;
 		Cache.cacheSize = cacheSize;
@@ -54,6 +58,8 @@ public class Cache {
 		}
 		Cache.blockCount = cacheSize / blockSize;
 
+		blocks = new PriorityQueue<Block>();
+
 		for (int i = 0; i < blockCount; i++) {
 			blocks.add(new Block(-1));
 		}
@@ -61,15 +67,15 @@ public class Cache {
 		cache = this;
 	}
 
-	public static boolean[] checkAddressAvailability(int address, int numberOfBytes) { // returns an array of 2 elements,
-																																											// each
+	public static boolean[] checkAddressAvailability(int address, int numberOfBytes) {
+		// returns an array of 2 elements,
 		// denoting if the needed word (1st
 		// and 2nd if that is the case) is
 		// available or not
 		// Check each cache block to determine if the target address is within it
-		int blockBaseAddress = (int) (address / blockSize) * blockSize;
+		int blockBaseAddress = ((int) (address / blockSize)) * blockSize;
 		int lastNeededAddress = address + numberOfBytes;
-		int lastNeededBlockBaseAddress = (int) (lastNeededAddress / blockSize) * blockSize;
+		int secondBlockBaseAddress = (int) (lastNeededAddress / blockSize) * blockSize;
 		boolean[] out = new boolean[2];
 
 		// Start by checking the existence of the first block
@@ -78,7 +84,7 @@ public class Cache {
 		}
 
 		if (lastNeededAddress > (blockBaseAddress + blockSize - 1)) {
-			if (!blocks.stream().anyMatch(block -> block.getTag() == lastNeededBlockBaseAddress)) {
+			if (!blocks.stream().anyMatch(block -> block.getTag() == secondBlockBaseAddress)) {
 				out[1] = false;
 			}
 		}
@@ -87,9 +93,9 @@ public class Cache {
 	}
 
 	public static void loadFromMemoryToCache(int address, int numberOfBytes) {
-		// Called after the miss penalty cycles are up
-		// TODO: Call method from memory
-
+		int blockBaseAddress = ((int) (address / blockSize)) * blockSize;
+		int lastNeededAddress = address + numberOfBytes;
+		int secondBlockBaseAddress = ((int) (lastNeededAddress / blockSize)) * blockSize;
 		// Check address availability again to see which blocks I should request
 		boolean[] requestedBlocks = checkAddressAvailability(address, numberOfBytes);
 
@@ -97,7 +103,7 @@ public class Cache {
 		// least recently used block replacemant
 		if (!requestedBlocks[0]) {
 			// Send the address, get the targetBlock and replace
-			Block replacementBlock1 = null;
+			Block replacementBlock1 = memory.readFromMem(blockBaseAddress);
 			replacementBlock1.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
 
 			Block leastRecentlyUsedBlock1 = blocks.remove();
@@ -108,7 +114,7 @@ public class Cache {
 
 		if (!requestedBlocks[1]) {
 			// Send the address + blockSize - 1 , get the targetBlock and replace
-			Block replacementBlock2 = null;
+			Block replacementBlock2 = memory.readFromMem(secondBlockBaseAddress);
 			replacementBlock2.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
 
 			Block leastRecentlyUsedBlock2 = blocks.remove();
@@ -118,9 +124,11 @@ public class Cache {
 		}
 	}
 
-	public static void writeBackFromCacheToMemory(Block leastRecentlyUsedBlock) {
-		// TODO: Call method from memory
-
+	public static void writeBackFromCacheToMemory(Block writeBackBlock) {
+		if (writeBackBlock.getTag() == -1) {
+			return;
+		}
+		memory.writeOnMem(writeBackBlock);
 		// Pass the block as is to the memory for it to update; the lastUsedCycle won't
 		// be used by the memory side
 	}
@@ -134,18 +142,41 @@ public class Cache {
 		// I have to know if I am loading a single or a double
 		Instruction instruction = instructionTable.get(loadStage.getInstructionIndex());
 		String operation = getInstructionOperation(instruction);
+		int address = Integer.parseInt(loadStage.getAddress());
 
 		if (operation.equals("LD") || operation.equals("L.D")) {
 			// Loading 8 bytes the reconstructing them
-			byte[] byteList = null;
+			byte[] byteList = new byte[8];
+			for (int i = 0; i < 8; i++) {
+				int blockBaseAddress = ((int) ((address + 1) / blockSize)) * blockSize;
+				// Get the correct block
+				byteList[i] = getBlockContainingAddress(address + i).getByte(address - blockBaseAddress);
+			}
+
 			return reconstructFromBytes(byteList, operation);
 		} else if (operation.equals("LW") || operation.equals("L.S")) {
 			// Loading 4 bytes then reconstructing them
-			byte[] byteList = null;
+			byte[] byteList = new byte[4];
+			for (int i = 0; i < 4; i++) {
+				int blockBaseAddress = ((int) ((address + i) / blockSize)) * blockSize;
+				// Get the correct block
+				byteList[i] = getBlockContainingAddress(address + i).getByte(address - blockBaseAddress);
+			}
 			return reconstructFromBytes(byteList, operation);
 		}
 
 		throw new Exception("Whoops, something went wrong -> This is cache");
+	}
+
+	private static Block getBlockContainingAddress(int address) {
+		int blockBaseAddress = ((int) (address / blockSize)) * blockSize;
+		for (Block block : blocks) {
+			if (block.getTag() == blockBaseAddress) {
+				return block;
+			}
+		}
+
+		return null;
 	}
 
 	private static double reconstructFromBytes(byte[] bytes, String loadOperation) throws Exception {
@@ -167,7 +198,7 @@ public class Cache {
 	}
 
 	public static void storeToCache(StoreStage storeStage) {
-
+		// TODO: Write this method
 	}
 
 	public String toString() {
