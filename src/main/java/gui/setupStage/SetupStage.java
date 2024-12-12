@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import units.FloatRegister;
 import units.IntegerRegister;
+import units.MemoryBlocks;
 import units.instructionUnit;
 import static units.instructionUnit.printQueue;
 import units.cache.Cache;
@@ -19,11 +20,9 @@ import units.stage.aluStage.BranchStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
 import units.stage.aluStage.IntegerStage;
-
+import gui.setupStage.CacheSetup;
 public class SetupStage {
-
-	public static Cache cache;
-
+	//public static MemoryBlocks = new MemoryBlocks(1024,CacheSetup.getBlockSize());
 	public static Stage setupMainStage() {
 		Stage stage = new Stage();
 		BorderPane borderPane = new BorderPane();

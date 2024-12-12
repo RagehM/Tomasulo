@@ -3,7 +3,6 @@ package units.cache;
 import static gui.simulatingStage.Simulate.cycle;
 import static units.instructionUnit.getInstructionOperation;
 import static units.instructionUnit.instructionTable;
-
 import java.nio.ByteBuffer;
 import java.util.PriorityQueue;
 

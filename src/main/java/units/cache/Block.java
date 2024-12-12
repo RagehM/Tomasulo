@@ -36,7 +36,7 @@ public class Block implements Comparable {
 
 	public Block(int tag) {
 		this.lastUsedCycle = 0;
-		this.tag = 0;
+		this.tag = tag;
 	}
 
 	@Override
