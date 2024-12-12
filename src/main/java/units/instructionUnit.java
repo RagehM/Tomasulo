@@ -295,8 +295,6 @@ public class instructionUnit {
 					if(tmp.produce()){
 						lastInstructionIndex = tmp.getAddress();
 					}
-
-
 					tmp.setBusy(false);
 				}
 			}
