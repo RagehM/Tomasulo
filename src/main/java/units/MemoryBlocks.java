@@ -29,6 +29,6 @@ public class MemoryBlocks {
 	}
 
 	public void writeOnMem(Block block) {
-		memory[block.getTag()] = block;
+		memory[block.getTag() / blockSize] = block;
 	}
 }
