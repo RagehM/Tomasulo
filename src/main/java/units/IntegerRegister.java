@@ -1,7 +1,5 @@
 package units;
 
-import units.stage.Stage;
-
 import java.util.ArrayList;
 
 import units.stage.aluStage.IntegerStage;
@@ -9,7 +7,7 @@ import units.stage.aluStage.IntegerStage;
 public class IntegerRegister {
 	private String register;
 	private static int number = 0;
-  private IntegerStage Qi;
+	private IntegerStage Qi;
 	private int content;
 
 	public String getRegister() {
@@ -44,6 +42,15 @@ public class IntegerRegister {
 		this.register = "R" + number;
 		number++;
 		integerRegisterTable.add(this);
+	}
+
+	public static IntegerRegister getRegister(String registerName) {
+		for (int i = 0; i < integerRegisterTable.size(); i++) {
+			if (registerName.equals(integerRegisterTable.get(i).getRegister())) {
+				return integerRegisterTable.get(i);
+			}
+		}
+		return null;
 	}
 
 	public static void initRegisterFile() {
