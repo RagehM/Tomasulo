@@ -353,7 +353,7 @@ public class instructionUnit {
 			instruction.setWriteResult(cycle + 1);
 			instructionTable.set(busWriter.getInstructionIndex(), instruction);
 
-			double value;
+			double floatValue;
 
 			if (busWriter instanceof LoadStage) {
 				floatValue = ((LoadStage) busWriter).produce();
@@ -367,7 +367,7 @@ public class instructionUnit {
 			}
 
 			// set the output of integer stage to be written on the bus
-			int integerValue;
+			long integerValue;
 			if((busWriter instanceof IntegerStage)) {
 				integerValue = ((IntegerStage) busWriter).produce();
 				System.out.println(integerValue);

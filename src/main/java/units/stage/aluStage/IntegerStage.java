@@ -1,12 +1,11 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
+import instructions.Instruction;
+import units.IntegerRegister;
 import static units.IntegerRegister.getIntegerRegister;
 import static units.IntegerRegister.updateIntegerRegister;
 import static units.instructionUnit.lastInstructionIndex;
-
-import instructions.Instruction;
-import units.IntegerRegister;
 import units.stage.Stage;
 
 public class IntegerStage extends Stage {
@@ -72,7 +71,7 @@ public class IntegerStage extends Stage {
 		return this.stage;
 	}
 
-    public int produce() {
+    public long produce() {
         return this.getOp().contains("DSUBI") ? (this.getVj() - this.getImmediate()) : (this.getVj() + this.getImmediate());
     }
     
