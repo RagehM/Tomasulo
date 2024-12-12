@@ -19,11 +19,8 @@ import units.stage.aluStage.BranchStage;
 import units.stage.aluStage.FloatingAdderStage;
 import units.stage.aluStage.FloatingMultiplyStage;
 import units.stage.aluStage.IntegerStage;
-
 public class SetupStage {
-
-	public static Cache cache;
-
+	//public static MemoryBlocks = new MemoryBlocks(1024,CacheSetup.getBlockSize());
 	public static Stage setupMainStage() {
 		Stage stage = new Stage();
 		BorderPane borderPane = new BorderPane();
