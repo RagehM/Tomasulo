@@ -1,12 +1,14 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import instructions.Instruction;
-import units.FloatRegister;
 import static units.FloatRegister.getFloatRegister;
 import static units.FloatRegister.updateFloatRegister;
 import static units.instructionUnit.lastInstructionIndex;
+
+import instructions.Instruction;
+import units.FloatRegister;
 import units.stage.Stage;
+
 public class FloatingMultiplyStage extends AluStage {
 	private String stage;
 	private static int number = 1;
@@ -43,8 +45,7 @@ public class FloatingMultiplyStage extends AluStage {
 		if (operandRegister1.getQi() == null) {
 			// if yes then set Vj to be the content of that register
 			multiplyStage.setVj(operandValue1);
-		}
-		else {
+		} else {
 			// else make the first operand depends on that stage
 			multiplyStage.setQj(operandRegister1.getQi());
 		}
@@ -57,8 +58,7 @@ public class FloatingMultiplyStage extends AluStage {
 		if (operandRegister2.getQi() == null) {
 			// if yes then set Vk to be the content of that register
 			multiplyStage.setVk(operandValue2);
-		}
-		else {
+		} else {
 			// else make the second operand depends on that stage
 			multiplyStage.setQk(operandRegister2.getQi());
 		}
@@ -70,7 +70,6 @@ public class FloatingMultiplyStage extends AluStage {
 		multiplyTable.set(firstUnusedIndex, multiplyStage);
 		reservedMultiply++;
 	}
-
 
 	public double produce() {
 		return this.getOp().contains("MUL") ? (this.getVj() * this.getVk()) : (this.getVj() / this.getVk());
