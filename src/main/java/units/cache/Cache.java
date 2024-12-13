@@ -6,6 +6,7 @@ import static units.instructionUnit.getInstructionOperation;
 import static units.instructionUnit.instructionTable;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 import gui.setupStage.InstructionSetup;
@@ -62,11 +63,24 @@ public class Cache {
 
 		for (int i = 0; i < blockCount; i++) {
 			Block tmp = new Block(-1);
-			tmp.setBlockName("Block " + 1);
+			tmp.setBlockName("Block " + i);
 			blocks.add(tmp);
 		}
 
 		cache = this;
+	}
+
+	public static Block getBlockWithName(String blockName) {
+		ArrayList<Block> cacheBlocks = new ArrayList<Block>(Cache.blocks);
+
+		for (int i = 0; i < cacheBlocks.size(); i++) {
+			Block current = cacheBlocks.get(i);
+			if (current.getBlockName().equals(blockName)) {
+				return current;
+			}
+		}
+
+		return null;
 	}
 
 	public static boolean[] checkAddressAvailability(int address, int numberOfBytes) {
