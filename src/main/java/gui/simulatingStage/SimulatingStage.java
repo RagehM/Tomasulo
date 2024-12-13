@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import gui.setupStage.AddressSetup;
 import gui.setupStage.AluSetup;
 import gui.setupStage.SetupStage;
+import static gui.simulatingStage.Simulate.cycle;
 import instructions.Instruction;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import units.stage.addressStage.LoadStage;
@@ -75,6 +78,9 @@ public class SimulatingStage {
 		BranchBox.setPrefWidth(400);
 		BranchBox.setPadding(new Insets(10, 10, 10, 10));
 
+		Label cycleLabel = new Label("Cycle: " + cycle);
+		cycleLabel.getStyleClass().add("label-title");
+
 		Button nextCycle = new Button("next Cycle ->");
 
 		nextCycle.setOnAction(e -> {
@@ -91,6 +97,7 @@ public class SimulatingStage {
 			InstructionTable.instructionTableView.refresh();
 			AluIntegerTable.integerAdderTableView.refresh();
 			BranchTable.branchTableView.refresh();
+			cycleLabel.setText("Cycle: " + cycle);
 		});
 
 //    Button prevCycle = new Button("<- Prev Cycle"); // eh2 eh2 eh2
@@ -109,9 +116,15 @@ public class SimulatingStage {
 		bottomPane.setAlignment(Pos.BOTTOM_CENTER);
 		bottomPane.setPadding(new Insets(10));
 
+		StackPane bottomStackPane = new StackPane();
+		bottomStackPane.getChildren().addAll(bottomPane, cycleLabel);
+
+		StackPane.setAlignment(cycleLabel, Pos.BOTTOM_RIGHT);
+		cycleLabel.setPadding(new Insets(10));
+
 		borderPane.setLeft(leftPane);
 		borderPane.setRight(rightPane);
-		borderPane.setBottom(bottomPane);
+		borderPane.setBottom(bottomStackPane);
 
 		String cssFile = SetupStage.class.getResource("/style.css").toExternalForm();
 		scene.getStylesheets().add(cssFile);
