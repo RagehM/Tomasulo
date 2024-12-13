@@ -198,20 +198,18 @@ public class instructionUnit {
 							} else if (type.equals("integer")) {
 								instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
 										InstructionSetup.getIntegerLatency());
-							}
-							else if (type.equals("branch")) {
+							} else if (type.equals("branch")) {
 								int address = 0;
-								if(!labels.containsKey(instruction[4])){
-										address = Integer.parseInt(instruction[4]);
-								}else{
-										address = labels.get(instruction[4]);
+								if (!labels.containsKey(instruction[4])) {
+									address = Integer.parseInt(instruction[4]);
+								} else {
+									address = labels.get(instruction[4]);
 								}
-								instruction1 = new BranchInstruction(instruction[1], instruction[2], instruction[3],
-												address, InstructionSetup.getIntegerLatency());
+								instruction1 = new BranchInstruction(instruction[1], instruction[2], instruction[3], address,
+										InstructionSetup.getIntegerLatency());
+							}
 						}
-						}
-					} 
-					else {
+					} else {
 						if (type.equals("floating")) {
 							instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 									InstructionSetup.getFloatingLatency());
@@ -220,14 +218,14 @@ public class instructionUnit {
 									InstructionSetup.getIntegerLatency());
 						} else if (type.equals("branch")) {
 							int address = 0;
-							if(!labels.containsKey(instruction[3])){
-									address = Integer.parseInt(instruction[3]);
-							}else{
-									address = labels.get(instruction[3]);
+							if (!labels.containsKey(instruction[3])) {
+								address = Integer.parseInt(instruction[3]);
+							} else {
+								address = labels.get(instruction[3]);
 							}
-							instruction1 = new BranchInstruction(instruction[0], instruction[1], instruction[2],
-											address, InstructionSetup.getIntegerLatency());
-					}
+							instruction1 = new BranchInstruction(instruction[0], instruction[1], instruction[2], address,
+									InstructionSetup.getIntegerLatency());
+						}
 					}
 				}
 				this.pushInstruction(instruction1);
@@ -302,7 +300,8 @@ public class instructionUnit {
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
 
-					if (tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getMissPenalty()) {
+					if (tmp.isMiss() && (tmp.getExecutionCycle() == CacheSetup.getMissPenalty()
+							|| (CacheSetup.getMissPenalty() == 0 && tmp.getExecutionCycle() == 1))) {
 						// Once penalty is done, get from memory
 						String operation = instructionUnit.getInstructionOperation(instruction);
 						int numberOfBytes = (operation.equals("LW") || operation.equals("L.S")) ? 4 : 8;
@@ -327,7 +326,8 @@ public class instructionUnit {
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
 
-					if (tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getMissPenalty()) {
+					if (tmp.isMiss() && (tmp.getExecutionCycle() == CacheSetup.getMissPenalty()
+							|| (CacheSetup.getMissPenalty() == 0 && tmp.getExecutionCycle() == 1))) {
 						// Once penalty is done, get from memory
 						String operation = instructionUnit.getInstructionOperation(instruction);
 						int numberOfBytes = (operation.equals("SW") || operation.equals("S.S")) ? 4 : 8;
@@ -522,10 +522,9 @@ public class instructionUnit {
 					stage.setQ(null);
 					Instruction storeInstruction = instructionTable.get(stage.getInstructionIndex());
 					String storeOperation = getInstructionOperation(storeInstruction);
-					if(storeOperation.equals("SW") || storeOperation.equals("SD")) {
+					if (storeOperation.equals("SW") || storeOperation.equals("SD")) {
 						stage.setV((double) integerValue);
-					}
-					else{
+					} else {
 						stage.setV(floatValue);
 					}
 				}
