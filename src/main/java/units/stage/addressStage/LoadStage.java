@@ -2,6 +2,7 @@ package units.stage.addressStage;
 
 import static gui.simulatingStage.Simulate.cycle;
 import static units.FloatRegister.updateFloatRegister;
+import static units.IntegerRegister.updateIntegerRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
 
@@ -66,8 +67,11 @@ public class LoadStage extends AddressStage {
 		}
 
 		// Update Register File Dependency
-		updateFloatRegister(instruction.getDestination(), loadStage); // to be checked again
-
+		if (operation.equals("LW") || operation.equals("LD")) {
+			updateIntegerRegister(instruction.getDestination(), loadStage);
+		} else {
+			updateFloatRegister(instruction.getDestination(), loadStage);
+		}
 		// Update Instruction Table Entry
 		instruction.setIssue(cycle + 1);
 		instructionTable.set(lastInstructionIndex, instruction);

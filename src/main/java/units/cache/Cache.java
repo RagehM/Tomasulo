@@ -176,11 +176,15 @@ public class Cache {
 		// Check if this address is contained within the cache
 		// if it is not, this load is a miss, increase execution cycles by penalty
 		// (again, since it got replaced somehow)
-
+		System.out.println("LOADING");
 		// I have to know if I am loading a single or a double
 		Instruction instruction = instructionTable.get(loadStage.getInstructionIndex());
 		String operation = getInstructionOperation(instruction);
 		int address = Integer.parseInt(loadStage.getAddress());
+
+		PriorityQueue<Block> tmp = blocks;
+
+		double returnValue = -1;
 
 		if (operation.equals("LD") || operation.equals("L.D")) {
 			// Loading 8 bytes the reconstructing them
@@ -191,19 +195,35 @@ public class Cache {
 				byteList[i] = getBlockContainingAddress(address + i).getByte(address + i - blockBaseAddress);
 			}
 
-			return reconstructFromBytes(byteList, operation);
+			System.out.print("Binary Value: ");
+			for (int i = 0; i < byteList.length; i++) {
+				System.out.print(String.format("%8s", Integer.toBinaryString(byteList[i])).replace(' ', '0'));
+			}
+
+			returnValue = reconstructFromBytes(byteList, operation);
 		} else if (operation.equals("LW") || operation.equals("L.S")) {
 			// Loading 4 bytes then reconstructing them
 			byte[] byteList = new byte[4];
 			for (int i = 0; i < 4; i++) {
 				int blockBaseAddress = ((int) ((address + i) / blockSize)) * blockSize;
 				// Get the correct block
-				byteList[i] = getBlockContainingAddress(address + i).getByte(address - blockBaseAddress);
+				byteList[i] = getBlockContainingAddress(address + i).getByte(address - blockBaseAddress + i);
 			}
-			return reconstructFromBytes(byteList, operation);
+
+			System.out.print("Binary Value: ");
+			for (int i = 0; i < byteList.length; i++) {
+				System.out.print(String.format("%8s", Integer.toBinaryString(byteList[i])).replace(' ', '0'));
+			}
+
+			returnValue = reconstructFromBytes(byteList, operation);
 		}
 
-		throw new Exception("Whoops, something went wrong -> This is cache");
+		System.out.println();
+		System.out.println("Value Returned to CPU: " + returnValue);
+
+		return returnValue;
+
+		// throw new Exception("Whoops, something went wrong -> This is cache");
 	}
 
 	private static Block getBlockContainingAddress(int address) {
@@ -244,7 +264,7 @@ public class Cache {
 		int address = Integer.parseInt(storeStage.getAddress());
 
 		byte[] byteList;
-
+		System.out.println("Value in Register: " + storeStage.getV());
 		switch (operation) {
 		case "SW":
 			byteList = ByteBuffer.allocate(4).putInt((int) storeStage.getV()).array();
@@ -265,6 +285,11 @@ public class Cache {
 		default:
 			throw new Exception("EDA EDA EDA -> This is storeToCache");
 		}
+		System.out.print("Binary Value: ");
+		for (int i = 0; i < byteList.length; i++) {
+			System.out.print(String.format("%8s", Integer.toBinaryString(byteList[i])).replace(' ', '0'));
+		}
+		System.out.println();
 
 		PriorityQueue<Block> tmp = blocks;
 

@@ -451,11 +451,17 @@ public class instructionUnit {
 			Instruction instruction = instructionTable.get(busWriter.getInstructionIndex());
 			instruction.setWriteResult(cycle + 1);
 			instructionTable.set(busWriter.getInstructionIndex(), instruction);
+			String operation = getInstructionOperation(instruction);
 
 			double floatValue = Float.MAX_VALUE;
 			long integerValue = Long.MAX_VALUE;
+
 			if (busWriter instanceof LoadStage) {
-				floatValue = ((LoadStage) busWriter).produce();
+				if (operation.equals("LW") || operation.equals("LD")) {
+					integerValue = (long) ((LoadStage) busWriter).produce();
+				} else {
+					floatValue = ((LoadStage) busWriter).produce();
+				}
 				reservedLoad--;
 			} else if (busWriter instanceof FloatingAdderStage) {
 				floatValue = ((FloatingAdderStage) busWriter).produce();
