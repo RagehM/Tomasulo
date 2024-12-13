@@ -50,6 +50,8 @@ public class instructionUnit {
 	private static PriorityQueue<Stage> writebackQueue = new PriorityQueue<Stage>();
 	private static PriorityQueue<StoreStage> storeQueue = new PriorityQueue<StoreStage>();
 
+	private static boolean branchStall = false;
+
 	public void addInstruction(Instruction instruction) {
 		instructionTable.add(instruction);
 	}
@@ -149,75 +151,63 @@ public class instructionUnit {
 				if (instruction.length == 3) {
 
 					String operation = getLoadOrStore(instruction[0]);
-					if(operation.equals("load")) {
+					if (operation.equals("load")) {
 						if (type.equals("floating")) {
 							instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], "",
-							InstructionSetup.getMemoryLatency());
-						} 
-						else if (type.equals("integer")) {
+									InstructionSetup.getMemoryLatency());
+						} else if (type.equals("integer")) {
 							instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], "",
-							InstructionSetup.getMemoryLatency());
+									InstructionSetup.getMemoryLatency());
 						}
-					}
-					else {
+					} else {
 						if (type.equals("floating")) {
 							instruction1 = new FloatingInstruction(instruction[0], instruction[2], instruction[1], "",
-							InstructionSetup.getMemoryLatency());
-						} 
-						else if (type.equals("integer")) {
+									InstructionSetup.getMemoryLatency());
+						} else if (type.equals("integer")) {
 							instruction1 = new IntegerInstruction(instruction[0], instruction[2], instruction[1], "",
-							InstructionSetup.getMemoryLatency());
+									InstructionSetup.getMemoryLatency());
 						}
 					}
-				}
-				else {
+				} else {
 					if (instruction[0].contains(":")) {
 						type = getInstructionType(instruction[1]);
 						labels.put(instruction[0].substring(0, instruction[0].length() - 1), instructionTable.size());
 						String operation = getLoadOrStore(instruction[1]);
-						if(instruction.length == 4) {
-							if(operation.equals("load")) {
+						if (instruction.length == 4) {
+							if (operation.equals("load")) {
 								if (type.equals("floating")) {
 									instruction1 = new FloatingInstruction(instruction[1], instruction[2], instruction[3], "",
 											InstructionSetup.getMemoryLatency());
-								} 
-								else if (type.equals("integer")) {
+								} else if (type.equals("integer")) {
 									instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], "",
 											InstructionSetup.getMemoryLatency());
 								}
-							}
-							else {
+							} else {
 								if (type.equals("floating")) {
 									instruction1 = new FloatingInstruction(instruction[1], instruction[3], instruction[2], "",
 											InstructionSetup.getMemoryLatency());
-								} 
-								else if (type.equals("integer")) {
+								} else if (type.equals("integer")) {
 									instruction1 = new IntegerInstruction(instruction[1], instruction[3], instruction[2], "",
 											InstructionSetup.getMemoryLatency());
 								}
 							}
-						}
-						else {
+						} else {
 							if (type.equals("floating")) {
 								instruction1 = new FloatingInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
 										InstructionSetup.getFloatingLatency());
-							} 
-							else if (type.equals("integer")) {
+							} else if (type.equals("integer")) {
 								instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
 										InstructionSetup.getIntegerLatency());
 							}
 						}
-					} 
-					else {
+					} else {
 						if (type.equals("floating")) {
 							instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 									InstructionSetup.getFloatingLatency());
-						} 
-						else if (type.equals("integer")) {
+						} else if (type.equals("integer")) {
 							instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 									InstructionSetup.getIntegerLatency());
-						} 
-						else if (type.equals("branch")) {
+						} else if (type.equals("branch")) {
 							instruction1 = new BranchInstruction(instruction[0], instruction[1], instruction[2],
 									labels.get(instruction[3]), InstructionSetup.getIntegerLatency());
 						}
@@ -233,7 +223,8 @@ public class instructionUnit {
 
 	public static void dispatch() {
 
-		if (Stage.getFirstEmptySlot(branchTable) == -1) {
+		if (Stage.getFirstEmptySlot(branchTable) == -1 || branchStall) {
+			branchStall = false;
 			return;
 		}
 
@@ -366,12 +357,6 @@ public class instructionUnit {
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
 					instructionTable.set(tmp.getInstructionIndex(), instruction);
-				} else {
-					if (tmp.produce()) {
-						tmp.setExecutionCycle(0);
-						lastInstructionIndex = tmp.getAddress();
-					}
-					tmp.setBusy(false);
 				}
 			}
 		}
@@ -391,6 +376,23 @@ public class instructionUnit {
 	}
 
 	public static void writeBack() throws Exception {
+		BranchStage branchStage = Stage.branchTable.get(0);
+
+		if (branchStage.getExecutionCycle() == InstructionSetup.getIntegerLatency() + 1) {
+			if (branchStage.produce()) {
+				lastInstructionIndex = branchStage.getAddress();
+			}
+
+			Instruction instruction = instructionTable.get(branchStage.getInstructionIndex());
+			instruction.setWriteResult(cycle + 1);
+			instructionTable.set(branchStage.getInstructionIndex(), instruction);
+
+			branchStage.setExecutionCycle(0);
+			branchStage.setBusy(false);
+
+			branchStall = true;
+		}
+
 		for (int i = 0; i < loadTable.size(); i++) {
 			LoadStage tmp = Stage.loadTable.get(i);
 			if ((!tmp.isMiss() && tmp.getExecutionCycle() == InstructionSetup.getMemoryLatency() + 1) || (tmp.isMiss()
