@@ -8,6 +8,7 @@ public class Block implements Comparable {
 	private int tag;
 	private int lastUsedCycle;
 	private boolean dirtyBit;
+	private String blockName;
 
 	public boolean isDirtyBit() {
 		return dirtyBit;
@@ -15,6 +16,14 @@ public class Block implements Comparable {
 
 	public void setDirtyBit(boolean dirtyBit) {
 		this.dirtyBit = dirtyBit;
+	}
+
+	public String getBlockName() {
+		return blockName;
+	}
+
+	public void setBlockName(String blockName) {
+		this.blockName = blockName;
 	}
 
 	public void setByte(int index, byte value) {

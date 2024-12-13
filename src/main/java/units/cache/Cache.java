@@ -61,7 +61,9 @@ public class Cache {
 		blocks = new PriorityQueue<Block>();
 
 		for (int i = 0; i < blockCount; i++) {
-			blocks.add(new Block(-1));
+			Block tmp = new Block(-1);
+			tmp.setBlockName("Block " + 1);
+			blocks.add(tmp);
 		}
 
 		cache = this;
@@ -119,6 +121,7 @@ public class Cache {
 				blocks.add(leastRecentlyUsedBlock1);
 			} else {
 				writeBackFromCacheToMemory(leastRecentlyUsedBlock1);
+				replacementBlock1.setBlockName(leastRecentlyUsedBlock1.getBlockName());
 				blocks.add(replacementBlock1);
 			}
 		}
@@ -138,6 +141,8 @@ public class Cache {
 			} else {
 
 				writeBackFromCacheToMemory(leastRecentlyUsedBlock2);
+				writeBackFromCacheToMemory(leastRecentlyUsedBlock2);
+				replacementBlock2.setBlockName(leastRecentlyUsedBlock2.getBlockName());
 				blocks.add(replacementBlock2);
 			}
 		}
@@ -157,7 +162,6 @@ public class Cache {
 		// Check if this address is contained within the cache
 		// if it is not, this load is a miss, increase execution cycles by penalty
 		// (again, since it got replaced somehow)
-		// TODO: Handle this case later
 
 		// I have to know if I am loading a single or a double
 		Instruction instruction = instructionTable.get(loadStage.getInstructionIndex());
