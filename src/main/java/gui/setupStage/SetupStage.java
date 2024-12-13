@@ -15,10 +15,7 @@ import units.cache.Cache;
 import units.instructionUnit;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
-import units.stage.aluStage.BranchStage;
-import units.stage.aluStage.FloatingAdderStage;
-import units.stage.aluStage.FloatingMultiplyStage;
-import units.stage.aluStage.IntegerStage;
+import units.stage.aluStage.*;
 
 public class SetupStage {
 
@@ -72,12 +69,18 @@ public class SetupStage {
 			for (int i = 0; i < AluSetup.getIntegerAdder(); i++) {
 				new IntegerStage(false, "", 0, null, 0);
 			}
+			String binaryString = String.format("%8s", Integer.toBinaryString(0 & 0xFF)).replace(' ', '0');
+			for(int i=0;i<Cache.cache.blockCount;i++){
+				for(int j=0;j<Cache.cache.blockSize;j++){
+					Cache.cache.blocks.toArray();
+				}
+			}
 
 			new BranchStage(false, "", 0);
 
 			Stage simStage = SimulatingStage.setupSimulatingStage(instructionUnit.instructionTable,
 					units.stage.Stage.loadTable, units.stage.Stage.storeTable, units.stage.Stage.adderTable,
-					units.stage.Stage.multiplyTable, units.stage.Stage.integerTable, units.stage.Stage.branchTable);
+					units.stage.Stage.multiplyTable, units.stage.Stage.integerTable, units.stage.Stage.branchTable, CacheStage.cacheTable);
 			simStage.show();
 			stage.hide();
 		});

@@ -4,10 +4,7 @@ import java.util.ArrayList;
 
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
-import units.stage.aluStage.BranchStage;
-import units.stage.aluStage.FloatingAdderStage;
-import units.stage.aluStage.FloatingMultiplyStage;
-import units.stage.aluStage.IntegerStage;
+import units.stage.aluStage.*;
 
 public class Stage implements Comparable {
 	public static ArrayList<LoadStage> loadTable = new ArrayList<LoadStage>();
@@ -16,6 +13,7 @@ public class Stage implements Comparable {
 	public static ArrayList<FloatingMultiplyStage> multiplyTable = new ArrayList<FloatingMultiplyStage>();
 	public static ArrayList<IntegerStage> integerTable = new ArrayList<IntegerStage>();
 	public static ArrayList<BranchStage> branchTable = new ArrayList<BranchStage>();
+
 
 	public static int reservedLoad = 0;
 	public static int reservedStore = 0;

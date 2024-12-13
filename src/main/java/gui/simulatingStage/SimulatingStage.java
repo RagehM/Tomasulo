@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import gui.setupStage.AddressSetup;
 import gui.setupStage.AluSetup;
+import gui.setupStage.CacheSetup;
 import gui.setupStage.SetupStage;
 import static gui.simulatingStage.Simulate.cycle;
 import instructions.Instruction;
@@ -19,16 +20,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
-import units.stage.aluStage.BranchStage;
-import units.stage.aluStage.FloatingAdderStage;
-import units.stage.aluStage.FloatingMultiplyStage;
-import units.stage.aluStage.IntegerStage;
+import units.stage.aluStage.*;
 
 public class SimulatingStage {
 	public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable,
-			ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable,
-			ArrayList<FloatingMultiplyStage> floatingMultiplyTable, ArrayList<IntegerStage> integerTable,
-			ArrayList<BranchStage> branchTable) {
+											 ArrayList<StoreStage> storeTable, ArrayList<FloatingAdderStage> floatingAdderTable,
+											 ArrayList<FloatingMultiplyStage> floatingMultiplyTable, ArrayList<IntegerStage> integerTable,
+											 ArrayList<BranchStage> branchTable, ArrayList<CacheStage> cacheTable) {
 		Stage stage = new Stage();
 		BorderPane borderPane = new BorderPane();
 		Scene scene = new Scene(borderPane, 1500, 600);
@@ -80,6 +78,10 @@ public class SimulatingStage {
 
 		Label cycleLabel = new Label("Cycle: " + cycle);
 		cycleLabel.getStyleClass().add("label-title");
+		VBox CacheBox=CacheTable.createTable(cacheTable, CacheSetup.getCacheSize());
+		CacheBox.setAlignment(Pos.BOTTOM_LEFT);
+		CacheBox.setPrefWidth(400);
+		CacheBox.setPadding(new Insets(10, 10, 10, 10));
 
 		Button nextCycle = new Button("next Cycle ->");
 
@@ -98,6 +100,7 @@ public class SimulatingStage {
 			AluIntegerTable.integerAdderTableView.refresh();
 			BranchTable.branchTableView.refresh();
 			cycleLabel.setText("Cycle: " + cycle);
+			CacheTable.cacheTableView.refresh();
 		});
 
 //    Button prevCycle = new Button("<- Prev Cycle"); // eh2 eh2 eh2
@@ -106,7 +109,7 @@ public class SimulatingStage {
 		topRightPane.setAlignment(Pos.TOP_RIGHT);
 		topRightPane.setPadding(new Insets(10));
 
-		VBox leftPane = new VBox(10, instructionBox, loadBox, storeBox);
+		VBox leftPane = new VBox(10, instructionBox, loadBox, storeBox,CacheBox);
 		leftPane.setPadding(new Insets(10));
 
 		VBox rightPane = new VBox(10, topRightPane, FloatingAdderBox, FloatingMultiplyBox, IntegerAdderBox, BranchBox);

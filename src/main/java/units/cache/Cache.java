@@ -18,9 +18,9 @@ public class Cache {
 	private static int hitLatency;
 	private static int missPenalty;
 	private static int cacheSize;
-	private static int blockSize;
-	private static int blockCount;
-	private static PriorityQueue<Block> blocks;
+	public static int blockSize;
+	public static int blockCount;
+	public static PriorityQueue<Block> blocks;
 
 	public void setHitLatency(int hitLatency) {
 		Cache.hitLatency = hitLatency;
