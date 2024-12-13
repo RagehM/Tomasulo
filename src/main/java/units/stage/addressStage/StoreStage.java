@@ -1,16 +1,15 @@
 package units.stage.addressStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import static units.FloatRegister.getFloatRegister;
-import static units.IntegerRegister.getIntegerRegister;
-import static units.instructionUnit.instructionTable;
-import static units.instructionUnit.lastInstructionIndex;
-
 import instructions.Instruction;
 import units.FloatRegister;
+import static units.FloatRegister.getFloatRegister;
 import units.IntegerRegister;
-import units.instructionUnit;
+import static units.IntegerRegister.getIntegerRegister;
 import units.cache.Cache;
+import units.instructionUnit;
+import static units.instructionUnit.instructionTable;
+import static units.instructionUnit.lastInstructionIndex;
 import units.stage.Stage;
 
 public class StoreStage extends AddressStage {
@@ -28,7 +27,7 @@ public class StoreStage extends AddressStage {
 	}
 
 	public void setV(double v) {
-		V = v;
+		this.V = v;
 	}
 
 	public Stage getQ() {

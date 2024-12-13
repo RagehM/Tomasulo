@@ -199,8 +199,19 @@ public class instructionUnit {
 								instruction1 = new IntegerInstruction(instruction[1], instruction[2], instruction[3], instruction[4],
 										InstructionSetup.getIntegerLatency());
 							}
+							else if (type.equals("branch")) {
+								int address = 0;
+								if(!labels.containsKey(instruction[4])){
+										address = Integer.parseInt(instruction[4]);
+								}else{
+										address = labels.get(instruction[4]);
+								}
+								instruction1 = new BranchInstruction(instruction[1], instruction[2], instruction[3],
+												address, InstructionSetup.getIntegerLatency());
 						}
-					} else {
+						}
+					} 
+					else {
 						if (type.equals("floating")) {
 							instruction1 = new FloatingInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 									InstructionSetup.getFloatingLatency());
@@ -208,9 +219,15 @@ public class instructionUnit {
 							instruction1 = new IntegerInstruction(instruction[0], instruction[1], instruction[2], instruction[3],
 									InstructionSetup.getIntegerLatency());
 						} else if (type.equals("branch")) {
+							int address = 0;
+							if(!labels.containsKey(instruction[3])){
+									address = Integer.parseInt(instruction[3]);
+							}else{
+									address = labels.get(instruction[3]);
+							}
 							instruction1 = new BranchInstruction(instruction[0], instruction[1], instruction[2],
-									labels.get(instruction[3]), InstructionSetup.getIntegerLatency());
-						}
+											address, InstructionSetup.getIntegerLatency());
+					}
 					}
 				}
 				this.pushInstruction(instruction1);
@@ -503,7 +520,14 @@ public class instructionUnit {
 				StoreStage stage = storeTable.get(i);
 				if (busWriter.equals(stage.getQ())) {
 					stage.setQ(null);
-					stage.setV((int) floatValue);
+					Instruction storeInstruction = instructionTable.get(stage.getInstructionIndex());
+					String storeOperation = getInstructionOperation(storeInstruction);
+					if(storeOperation.equals("SW") || storeOperation.equals("SD")) {
+						stage.setV((double) integerValue);
+					}
+					else{
+						stage.setV(floatValue);
+					}
 				}
 			}
 

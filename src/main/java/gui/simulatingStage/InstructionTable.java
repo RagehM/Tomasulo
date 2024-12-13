@@ -1,5 +1,7 @@
 package gui.simulatingStage;
 
+import java.util.ArrayList;
+
 import instructions.Instruction;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,8 +9,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
 
 public class InstructionTable {
   public static TableView<Instruction> instructionTableView = new TableView<>();
@@ -47,7 +47,7 @@ public class InstructionTable {
     instructionTableView.setItems(data);
 
     instructionTableView.setFixedCellSize(25);
-    instructionTableView.setPrefHeight(25 * 5 + 30);
+    instructionTableView.setPrefHeight(25 * 7 + 30);
 
     instructionTableView.setPrefWidth(Double.MAX_VALUE);
 
