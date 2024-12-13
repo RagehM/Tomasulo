@@ -20,7 +20,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import units.stage.addressStage.LoadStage;
 import units.stage.addressStage.StoreStage;
-import units.stage.aluStage.*;
+import units.stage.aluStage.BranchStage;
+import units.stage.aluStage.CacheStage;
+import units.stage.aluStage.FloatingAdderStage;
+import units.stage.aluStage.FloatingMultiplyStage;
+import units.stage.aluStage.IntegerStage;
 
 public class SimulatingStage {
 	public static Stage setupSimulatingStage(ArrayList<Instruction> instructionTable, ArrayList<LoadStage> loadTable,
@@ -99,8 +103,8 @@ public class SimulatingStage {
 			InstructionTable.instructionTableView.refresh();
 			AluIntegerTable.integerAdderTableView.refresh();
 			BranchTable.branchTableView.refresh();
-			cycleLabel.setText("Cycle: " + cycle);
 			CacheTable.cacheTableView.refresh();
+			cycleLabel.setText("Cycle: " + cycle);
 		});
 
 //    Button prevCycle = new Button("<- Prev Cycle"); // eh2 eh2 eh2

@@ -63,4 +63,12 @@ public class Block implements Comparable {
 		Block block = (Block) o;
 		return Integer.compare(this.lastUsedCycle, block.lastUsedCycle);
 	}
+
+	public String toString() {
+		String s = "";
+		for (int i = 0; i < CacheSetup.getBlockSize(); i++) {
+			s += bytes[i] + " ";
+		}
+		return s;
+	}
 }

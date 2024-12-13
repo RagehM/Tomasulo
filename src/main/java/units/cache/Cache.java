@@ -213,7 +213,6 @@ public class Cache {
 				return block;
 			}
 		}
-
 		return null;
 	}
 

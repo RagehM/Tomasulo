@@ -1,28 +1,27 @@
 package gui.simulatingStage;
 
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import units.stage.aluStage.BranchStage;
 import units.stage.aluStage.CacheStage;
 
-import java.util.ArrayList;
-
 public class CacheTable {
-    public static TableView<CacheStage> cacheTableView=new TableView<>();
+    public static TableView<CacheStage> cacheTableView= new TableView<>();
 
     public static VBox createTable(ArrayList<CacheStage> table,int size){
 
-        TableColumn<CacheStage,String> block=new TableColumn<>("Block");
+        TableColumn<CacheStage, String> block=new TableColumn<>("Block");
         block.setCellValueFactory(new PropertyValueFactory<>("blockName"));
         
-        TableColumn<CacheStage,String> address=new TableColumn<>("Address");
+        TableColumn<CacheStage, String> address=new TableColumn<>("Address");
         address.setCellValueFactory(new PropertyValueFactory<>("address"));
 
-        TableColumn<CacheStage,String> value=new TableColumn<>("value");
+        TableColumn<CacheStage, String> value=new TableColumn<>("value");
         value.setCellValueFactory((new PropertyValueFactory<>("value")));
 
         cacheTableView.getColumns().addAll(block,address,value);
@@ -32,6 +31,7 @@ public class CacheTable {
         ObservableList<CacheStage> data = FXCollections.observableArrayList();
         for (int i = 0; i < table.size(); i++) {
             data.add((CacheStage) table.get(i));
+            System.out.println(table.get(i).toString());
         }
 
         cacheTableView.setItems(data);

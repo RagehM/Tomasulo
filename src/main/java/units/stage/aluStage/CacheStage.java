@@ -16,9 +16,9 @@ public class CacheStage {
         this.address = address;
     }
 
-    public static ArrayList<CacheStage> cacheTable=new ArrayList<CacheStage>();
+    public static ArrayList<CacheStage> cacheTable = new ArrayList<CacheStage>();
 
-    public CacheStage(String blockName,String value,int address) {
+    public CacheStage(String blockName, String value, int address) {
         this.blockName=blockName;
         this.address=address;
         this.value = value;
@@ -48,5 +48,8 @@ public class CacheStage {
 
     public static void setCacheTable(ArrayList<CacheStage> cacheTable) {
         CacheStage.cacheTable = cacheTable;
+    }
+    public String toString(){
+        return blockName + " " + address + " " + value;
     }
 }
