@@ -1,10 +1,11 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
+import static units.instructionUnit.lastInstructionIndex;
+
 import instructions.BranchInstruction;
 import instructions.Instruction;
 import units.IntegerRegister;
-import static units.instructionUnit.lastInstructionIndex;
 
 public class BranchStage extends AluStage {
 	private String stage;
@@ -35,22 +36,22 @@ public class BranchStage extends AluStage {
 	}
 
 	public String toString() {
-		return ((this.stage + getOp() + getVj() + getVk() + getQj() + getQk() + address)+" " +this.busy+" "+ this.address);
+		return ((this.stage + getOp() + getVj() + getVk() + getQj() + getQk() + address) + " " + this.busy + " "
+				+ this.address);
 	}
 
 	public boolean produce() {
-		if(this.getOp().contains("BNE")){
-			if((this.getVj()!=this.getVk())){
+		if (this.getOp().contains("BNE")) {
+			if ((this.getVj() != this.getVk())) {
 				return true;
 			}
-		}else{
-			if((this.getVj()==this.getVk())){
+		} else {
+			if ((this.getVj() == this.getVk())) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 	public static void dispatchBranch(Instruction instruction, String operation) {
 		// Branch stalls the whole pipeline until complete, therefore, no need to check
@@ -59,7 +60,7 @@ public class BranchStage extends AluStage {
 		BranchInstruction branchInstruction = (BranchInstruction) instruction;
 		BranchStage branchStage = branchTable.get(0);
 
-		if(branchStage.getBusy()){
+		if (branchStage.getBusy()) {
 			return;
 		}
 		branchStage.setBusy(true);
@@ -82,14 +83,15 @@ public class BranchStage extends AluStage {
 			branchStage.setQk(operandRegister2.getQi());
 		}
 
+		branchStage.setOp(operation);
+
 		branchStage.setIssueCycle(cycle + 1);
 		branchStage.setInstructionIndex(lastInstructionIndex);
 
 		instruction.setIssue(cycle + 1);
 
-
-		//System.out.println(branchTable.toString());
-		//System.out.println(branchStage.toString());
+		// System.out.println(branchTable.toString());
+		// System.out.println(branchStage.toString());
 		branchTable.set(0, branchStage);
 		// TODO: If it breaks, this is the issue
 	}

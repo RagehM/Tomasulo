@@ -29,10 +29,6 @@ public class LoadStage extends AddressStage {
 		return this.stage;
 	}
 
-	private static void addToLoadTable(LoadStage loadStage) {
-
-	}
-
 	public static boolean checkAddressClash(Instruction instruction) {
 
 		for (int i = 0; i < storeTable.size(); i++) {
@@ -65,6 +61,8 @@ public class LoadStage extends AddressStage {
 
 		if (!dataAvailable) {
 			loadStage.setMiss(true);
+		} else {
+			loadStage.setMiss(false);
 		}
 
 		// Update Register File Dependency

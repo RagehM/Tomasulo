@@ -83,8 +83,9 @@ public class StoreStage extends AddressStage {
 
 		if (!dataAvailable) {
 			storeStage.setMiss(true);
+		} else {
+			storeStage.setMiss(false);
 		}
-
 		// Update Instruction Table Entry
 		instruction.setIssue(cycle + 1);
 		instructionTable.set(lastInstructionIndex, instruction);
