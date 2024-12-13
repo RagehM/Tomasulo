@@ -4,6 +4,7 @@ import static gui.setupStage.SetupStage.memory;
 import static gui.simulatingStage.Simulate.cycle;
 import static units.instructionUnit.getInstructionOperation;
 import static units.instructionUnit.instructionTable;
+import static units.stage.aluStage.CacheStage.cacheTable;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -276,11 +277,29 @@ public class Cache {
 			writeBackBlock.setDirtyBit(true);
 
 		}
+		for (int i = 0; i < Cache.blockCount; i++) {
+			String blockName = "Block " + i;
+			Block current = Cache.getBlockWithName(blockName);
+			for (int j = 0; j < Cache.blockSize; j++) {
+				String binaryString = String.format("%8s", Integer.toBinaryString(current.getByte(j) & 0xFF)).replace(' ', '0');
+				if(current.getTag()!=-1) {
+					cacheTable.get(i * Cache.blockSize + j).setAddress(current.getTag() + j);
+				}
+				else{
+					cacheTable.get(i * Cache.blockSize + j).setAddress(-1);
+				}
+				System.out.println("cuurent byte:"+current.getByte(j));
+				System.out.println("block name:"+blockName);
+				System.out.println("byte num"+j);
+				System.out.println("tag:"+ current.getTag());
+				System.out.println("binary value:"+ binaryString);
 
+				cacheTable.get(i*Cache.blockSize+j).setValue(binaryString);
+			}
+		}
 	}
 
 	public String toString() {
 		return hitLatency + " " + missPenalty + " " + cacheSize + " " + blockSize;
 	}
-
 }

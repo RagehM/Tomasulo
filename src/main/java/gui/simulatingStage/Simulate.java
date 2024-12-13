@@ -27,15 +27,6 @@ public class Simulate {
 		if (lastInstructionIndex != instructionTable.size()) {
 			dispatch();
 		}
-				for (int i = 0; i < Cache.blockCount; i++) {
-			String blockName = "Block " + i;
-			Block current = Cache.getBlockWithName(blockName);
-			for (int j = 0; j < Cache.blockSize; j++) {
-				String binaryString = String.format("%8s", Integer.toBinaryString(current.getByte(j))).replace(' ', '0');
-				cacheTable.add(new CacheStage(current.getBlockName(), binaryString, current.getTag()));
-				cacheTable.get(0).setAddress(55);
-			}
-		}
 		cycle++;
 	}
 }

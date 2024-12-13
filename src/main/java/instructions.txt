@@ -1,4 +1,4 @@
-S.D F2 0
+S.D F1 0
 L.D F1 0
 L.S F2 8
 MUL.D F0 F2 F4
