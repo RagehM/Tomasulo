@@ -76,7 +76,7 @@ public class Cache {
 		PriorityQueue<Block> tmp = blocks;
 
 		int blockBaseAddress = ((int) (address / blockSize)) * blockSize;
-		int lastNeededAddress = address + numberOfBytes;
+		int lastNeededAddress = address + numberOfBytes - 1;
 		int secondBlockBaseAddress = (int) (lastNeededAddress / blockSize) * blockSize;
 		boolean[] out = new boolean[2];
 		for (int i = 0; i < out.length; i++) {
@@ -99,7 +99,7 @@ public class Cache {
 
 	public static void loadFromMemoryToCache(int address, int numberOfBytes) {
 		int blockBaseAddress = ((int) (address / blockSize)) * blockSize;
-		int lastNeededAddress = address + numberOfBytes;
+		int lastNeededAddress = address + numberOfBytes - 1;
 		int secondBlockBaseAddress = ((int) (lastNeededAddress / blockSize)) * blockSize;
 		// Check address availability again to see which blocks I should request
 		boolean[] requestedBlocks = checkAddressAvailability(address, numberOfBytes);
@@ -110,23 +110,38 @@ public class Cache {
 			// Send the address, get the targetBlock and replace
 			Block replacementBlock1 = memory.readFromMem(blockBaseAddress);
 			replacementBlock1.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+			replacementBlock1.setDirtyBit(false);
 
 			Block leastRecentlyUsedBlock1 = blocks.remove();
-			writeBackFromCacheToMemory(leastRecentlyUsedBlock1);
 
-			blocks.add(replacementBlock1);
+			if (leastRecentlyUsedBlock1.isDirtyBit() && leastRecentlyUsedBlock1.getTag() == replacementBlock1.getTag()) {
+				leastRecentlyUsedBlock1.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+				blocks.add(leastRecentlyUsedBlock1);
+			} else {
+				writeBackFromCacheToMemory(leastRecentlyUsedBlock1);
+				blocks.add(replacementBlock1);
+			}
 		}
 
 		if (!requestedBlocks[1]) {
 			// Send the address + blockSize - 1 , get the targetBlock and replace
 			Block replacementBlock2 = memory.readFromMem(secondBlockBaseAddress);
 			replacementBlock2.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+			replacementBlock2.setDirtyBit(false);
 
 			Block leastRecentlyUsedBlock2 = blocks.remove();
 			writeBackFromCacheToMemory(leastRecentlyUsedBlock2);
 
-			blocks.add(replacementBlock2);
+			if (leastRecentlyUsedBlock2.isDirtyBit() && leastRecentlyUsedBlock2.getTag() == replacementBlock2.getTag()) {
+				leastRecentlyUsedBlock2.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+				blocks.add(leastRecentlyUsedBlock2);
+			} else {
+
+				writeBackFromCacheToMemory(leastRecentlyUsedBlock2);
+				blocks.add(replacementBlock2);
+			}
 		}
+
 	}
 
 	public static void writeBackFromCacheToMemory(Block writeBackBlock) {
@@ -187,14 +202,18 @@ public class Cache {
 	private static double reconstructFromBytes(byte[] bytes, String loadOperation) throws Exception {
 		if (bytes.length == 4) { // int or float
 			if (loadOperation.equals("LW")) {
+				System.out.println("Reading an int from cache");
 				return (double) ByteBuffer.wrap(bytes).getInt();
 			} else if (loadOperation.equals("L.S")) {
+				System.out.println("Reading a float from cache");
 				return (double) ByteBuffer.wrap(bytes).getFloat();
 			}
 		} else if (bytes.length == 8) {
 			if (loadOperation.equals("LD")) {
+				System.out.println("Reading a double from cache");
 				return (double) ByteBuffer.wrap(bytes).getLong();
 			} else if (loadOperation.equals("L.D")) {
+				System.out.println("Reading a double from cache");
 				return ByteBuffer.wrap(bytes).getDouble();
 			}
 		}
@@ -203,7 +222,6 @@ public class Cache {
 	}
 
 	public static void storeToCache(StoreStage storeStage) throws Exception {
-		// TODO: Write this method
 		Instruction instruction = instructionTable.get(storeStage.getInstructionIndex());
 		String operation = getInstructionOperation(instruction);
 		int address = Integer.parseInt(storeStage.getAddress());
@@ -213,24 +231,33 @@ public class Cache {
 		switch (operation) {
 		case "SW":
 			byteList = ByteBuffer.allocate(4).putInt((int) storeStage.getV()).array();
+			System.out.println("Writing an int Back to cache");
 			break;
 		case "SD":
 			byteList = ByteBuffer.allocate(8).putLong((long) storeStage.getV()).array();
+			System.out.println("Writing a long Back to cache");
 			break;
 		case "S.S":
 			byteList = ByteBuffer.allocate(4).putFloat((float) storeStage.getV()).array();
+			System.out.println("Writing an float Back to cache");
 			break;
 		case "S.D":
 			byteList = ByteBuffer.allocate(8).putDouble(storeStage.getV()).array();
+			System.out.println("Writing an double Back to cache");
 			break;
 		default:
 			throw new Exception("EDA EDA EDA -> This is storeToCache");
 		}
 
+		PriorityQueue<Block> tmp = blocks;
+
 		for (int i = 0; i < byteList.length; i++) {
 			int blockBaseAddress = ((int) ((address + i) / blockSize)) * blockSize;
 			// Get the correct block
-			getBlockContainingAddress(address + i).setByte(address + i - blockBaseAddress, byteList[i]);
+			Block writeBackBlock = getBlockContainingAddress(address + i);
+			writeBackBlock.setByte(address + i - blockBaseAddress, byteList[i]);
+			writeBackBlock.setDirtyBit(true);
+
 		}
 
 	}
