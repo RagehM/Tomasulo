@@ -2,12 +2,13 @@ package units;
 
 import java.util.ArrayList;
 
+import units.stage.Stage;
 import units.stage.aluStage.IntegerStage;
 
 public class IntegerRegister {
 	private String register;
 	private static int number = 0;
-	private IntegerStage Qi;
+	private Stage Qi;
 	private long content;
 
 	public String getRegister() {
@@ -18,11 +19,11 @@ public class IntegerRegister {
 		this.register = register;
 	}
 
-	public IntegerStage getQi() {
+	public Stage getQi() {
 		return Qi;
 	}
 
-	public void setQi(IntegerStage qi) {
+	public void setQi(Stage qi) {
 		Qi = qi;
 	}
 
@@ -59,7 +60,7 @@ public class IntegerRegister {
 
 	public static void initRegisterFile() {
 		for (int i = 0; i < 32; i++) {
-			new IntegerRegister(null, (long)i);
+			new IntegerRegister(null, (long) i);
 		}
 	}
 
@@ -81,11 +82,11 @@ public class IntegerRegister {
 		return -1;
 	}
 
-	public static void updateIntegerRegister(String registerName, IntegerStage integerStage) {
+	public static void updateIntegerRegister(String registerName, Stage stage) {
 		IntegerRegister register = getIntegerRegister(registerName);
 		int registerIndex = getIntegerRegisterIndex(registerName);
 		if (register != null && registerIndex != -1) {
-			register.setQi(integerStage);
+			register.setQi(stage);
 			integerRegisterTable.set(registerIndex, register);
 		}
 	}

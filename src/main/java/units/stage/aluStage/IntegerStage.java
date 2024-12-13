@@ -1,11 +1,12 @@
 package units.stage.aluStage;
 
 import static gui.simulatingStage.Simulate.cycle;
-import instructions.Instruction;
-import units.IntegerRegister;
 import static units.IntegerRegister.getIntegerRegister;
 import static units.IntegerRegister.updateIntegerRegister;
 import static units.instructionUnit.lastInstructionIndex;
+
+import instructions.Instruction;
+import units.IntegerRegister;
 import units.stage.Stage;
 
 public class IntegerStage extends Stage {
@@ -13,7 +14,7 @@ public class IntegerStage extends Stage {
 	private static int number = 1;
 	private String op;
 	private long Vj;
-	private IntegerStage Qj;
+	private Stage Qj;
 	private long immediate; // Immediate Value
 
 	public IntegerStage(Boolean busy, String op, long Vj, IntegerStage Qj, long immediate) {
@@ -27,11 +28,11 @@ public class IntegerStage extends Stage {
 		integerTable.add(this);
 	}
 
-	public IntegerStage getQj() {
+	public Stage getQj() {
 		return Qj;
 	}
 
-	public void setQj(IntegerStage qj) {
+	public void setQj(Stage qj) {
 		Qj = qj;
 	}
 
@@ -71,19 +72,19 @@ public class IntegerStage extends Stage {
 		return this.stage;
 	}
 
-    public long produce() {
-        // to make the instruction be able to execute again after branch if available
-        this.setExecutionCycle(0);
-        return this.getOp().contains("DSUBI") ? (this.getVj() - this.getImmediate()) : (this.getVj() + this.getImmediate());
-    }
-    
-    public static void dispatchInteger(Instruction instruction, String operation) {
-        int firstUnusedIndex = Stage.getFirstEmptySlot(integerTable);
+	public long produce() {
+		// to make the instruction be able to execute again after branch if available
+		this.setExecutionCycle(0);
+		return this.getOp().contains("DSUBI") ? (this.getVj() - this.getImmediate()) : (this.getVj() + this.getImmediate());
+	}
+
+	public static void dispatchInteger(Instruction instruction, String operation) {
+		int firstUnusedIndex = Stage.getFirstEmptySlot(integerTable);
 		IntegerStage integerStage = integerTable.get(firstUnusedIndex);
 
 		integerStage.setBusy(true);
 		integerStage.setOp(operation);
-        integerStage.setImmediate(Long.parseLong(instruction.getOperand2()));
+		integerStage.setImmediate(Long.parseLong(instruction.getOperand2()));
 
 		IntegerRegister operandRegister1 = getIntegerRegister(instruction.getOperand1());
 		long operandValue1 = operandRegister1.getContent();

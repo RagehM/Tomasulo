@@ -2,11 +2,13 @@ package units.stage.addressStage;
 
 import static gui.simulatingStage.Simulate.cycle;
 import static units.FloatRegister.getFloatRegister;
+import static units.IntegerRegister.getIntegerRegister;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
 
 import instructions.Instruction;
 import units.FloatRegister;
+import units.IntegerRegister;
 import units.instructionUnit;
 import units.cache.Cache;
 import units.stage.Stage;
@@ -60,16 +62,31 @@ public class StoreStage extends AddressStage {
 		storeStage.setBusy(true);
 		storeStage.setAddress(instruction.getDestination());
 
-		FloatRegister destinationRegister = getFloatRegister(instruction.getOperand1());
-		double destinationValue = destinationRegister.getContent();
+		if (operation.equals("SW") || operation.equals("SD")) {
+			IntegerRegister destinationRegister = getIntegerRegister(instruction.getOperand1());
 
-		// check if the destination Register does not depend on any stage
-		if (destinationRegister.getQi() == null) {
-			// if yes then set the value to be the content of the register
-			storeStage.setV((int) destinationValue);
+			double destinationValue = (double) destinationRegister.getContent();
+
+			// check if the destination Register does not depend on any stage
+			if (destinationRegister.getQi() == null) {
+				// if yes then set the value to be the content of the register
+				storeStage.setV((int) destinationValue);
+			} else {
+				// else make the store depends on that stage
+				storeStage.setQ(destinationRegister.getQi());
+			}
 		} else {
-			// else make the store depends on that stage
-			storeStage.setQ(destinationRegister.getQi());
+			FloatRegister destinationRegister = getFloatRegister(instruction.getOperand1());
+			double destinationValue = destinationRegister.getContent();
+
+			// check if the destination Register does not depend on any stage
+			if (destinationRegister.getQi() == null) {
+				// if yes then set the value to be the content of the register
+				storeStage.setV((int) destinationValue);
+			} else {
+				// else make the store depends on that stage
+				storeStage.setQ(destinationRegister.getQi());
+			}
 		}
 
 		storeStage.setIssueCycle(cycle + 1);
