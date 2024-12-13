@@ -7,6 +7,15 @@ public class Block implements Comparable {
 	private byte[] bytes = new byte[CacheSetup.getBlockSize()];
 	private int tag;
 	private int lastUsedCycle;
+	private boolean dirtyBit;
+
+	public boolean isDirtyBit() {
+		return dirtyBit;
+	}
+
+	public void setDirtyBit(boolean dirtyBit) {
+		this.dirtyBit = dirtyBit;
+	}
 
 	public void setByte(int index, byte value) {
 		bytes[index] = value;

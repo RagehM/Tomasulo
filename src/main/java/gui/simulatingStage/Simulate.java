@@ -14,6 +14,10 @@ public class Simulate {
 //		loadTable.get(0).setAddress("505");
 //		System.out.println(instructionTable.get(0).toString());
 		// w
+
+		// If no stations are busy and lastInstructionIndex == instructionTable.size()
+		// Pop-up execution complete (calls a function)
+
 		execute();
 		writeBack();
 		if (lastInstructionIndex != instructionTable.size()) {
