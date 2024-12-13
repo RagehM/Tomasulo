@@ -278,8 +278,8 @@ public class instructionUnit {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
 
-				if (!(tmp.getExecutionCycle() > CacheSetup.getLatency()) || (tmp.isMiss()
-						&& !(tmp.getExecutionCycle() > CacheSetup.getLatency() + CacheSetup.getMissPenalty()))) {
+				if (!(tmp.getExecutionCycle() > CacheSetup.getLatency())
+						|| (tmp.isMiss() && !(tmp.getExecutionCycle() > CacheSetup.getLatency() + CacheSetup.getMissPenalty()))) {
 
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
@@ -303,8 +303,8 @@ public class instructionUnit {
 				// If it is busy, increment its execution counter
 				tmp.setExecutionCycle(tmp.getExecutionCycle() + 1);
 
-				if (!(tmp.getExecutionCycle() > CacheSetup.getLatency()) || (tmp.isMiss()
-						&& !(tmp.getExecutionCycle() > CacheSetup.getLatency() + CacheSetup.getMissPenalty()))) {
+				if (!(tmp.getExecutionCycle() > CacheSetup.getLatency())
+						|| (tmp.isMiss() && !(tmp.getExecutionCycle() > CacheSetup.getLatency() + CacheSetup.getMissPenalty()))) {
 
 					Instruction instruction = instructionTable.get(tmp.getInstructionIndex());
 					instruction.setExecutionComplete(cycle + 1);
@@ -395,8 +395,8 @@ public class instructionUnit {
 
 		for (int i = 0; i < loadTable.size(); i++) {
 			LoadStage tmp = Stage.loadTable.get(i);
-			if ((!tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getLatency() + 1) || (tmp.isMiss()
-					&& tmp.getExecutionCycle() == CacheSetup.getLatency() + CacheSetup.getMissPenalty() + 1)) {
+			if ((!tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getLatency() + 1)
+					|| (tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getLatency() + CacheSetup.getMissPenalty() + 1)) {
 				// Do writeback method that takes in the value and the RS name & code, what this
 				// does is add it to writeback queue
 
@@ -408,8 +408,8 @@ public class instructionUnit {
 
 		for (int i = 0; i < storeTable.size(); i++) {
 			StoreStage tmp = Stage.storeTable.get(i);
-			if ((!tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getLatency() + 1) || (tmp.isMiss()
-					&& tmp.getExecutionCycle() == CacheSetup.getLatency() + CacheSetup.getMissPenalty() + 1)) {
+			if ((!tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getLatency() + 1)
+					|| (tmp.isMiss() && tmp.getExecutionCycle() == CacheSetup.getLatency() + CacheSetup.getMissPenalty() + 1)) {
 				// Do writeback method that takes in the value and the RS name & code, what this
 				// does is add it to writeback queue
 

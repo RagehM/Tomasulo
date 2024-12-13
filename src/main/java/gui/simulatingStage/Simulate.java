@@ -1,14 +1,13 @@
 package gui.simulatingStage;
 
-import units.cache.Block;
-import units.cache.Cache;
 import static units.instructionUnit.dispatch;
 import static units.instructionUnit.execute;
 import static units.instructionUnit.instructionTable;
 import static units.instructionUnit.lastInstructionIndex;
 import static units.instructionUnit.writeBack;
-import units.stage.aluStage.CacheStage;
-import static units.stage.aluStage.CacheStage.cacheTable;
+
+import gui.AlertBox;
+import units.stage.Stage;
 
 public class Simulate {
 	public static int cycle = 0;
@@ -19,14 +18,17 @@ public class Simulate {
 //		System.out.println(instructionTable.get(0).toString());
 		// w
 
-		// If no stations are busy and lastInstructionIndex == instructionTable.size()
-		// Pop-up execution complete (calls a function)
+		if (Stage.checkIfAnythingIsRunning() || lastInstructionIndex != instructionTable.size()) {
 
-		execute();
-		writeBack();
-		if (lastInstructionIndex != instructionTable.size()) {
-			dispatch();
+			execute();
+			writeBack();
+			if (lastInstructionIndex != instructionTable.size()) {
+				dispatch();
+			}
+			cycle++;
+		} else {
+			// Program execution complete, ollo 7aga
+			AlertBox.display("Execution Finished", "The Programs Execution is done");
 		}
-		cycle++;
 	}
 }
