@@ -33,7 +33,7 @@ public class LoadStage extends AddressStage {
 	public static boolean checkAddressClash(Instruction instruction) {
 
 		for (int i = 0; i < storeTable.size(); i++) {
-			if (storeTable.get(i).getBusy() && storeTable.get(i).getAddress() == instruction.getOperand1()) {
+			if (storeTable.get(i).getBusy() && storeTable.get(i).getAddress().equals(instruction.getOperand1())) {
 				return true;
 			}
 		}
