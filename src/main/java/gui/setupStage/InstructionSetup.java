@@ -10,7 +10,7 @@ public class InstructionSetup {
 
   private static TextField integerLatency = new TextField();
   private static TextField floatingLatency = new TextField();
-  private static TextField memoryLatency = new TextField();
+
 
   public static int getIntegerLatency() {
     return Integer.parseInt(integerLatency.getText());
@@ -20,9 +20,7 @@ public class InstructionSetup {
     return Integer.parseInt(floatingLatency.getText());
   }
 
-  public static int getMemoryLatency() {
-    return Integer.parseInt(memoryLatency.getText());
-  }
+
 
   public static VBox setup() {
     VBox vbox = new VBox();
@@ -45,8 +43,7 @@ public class InstructionSetup {
     Label floatingLabel = new Label("Floating-Point Latency:");
     floatingLatency.setPromptText("Enter latency (cycles)");
 
-    Label memoryLabel = new Label("Memory Latency:");
-    memoryLatency.setPromptText("Enter latency (cycles)");
+
 
     gridPane.add(integerLabel, 0, 0);
     gridPane.add(integerLatency, 1, 0);
@@ -54,8 +51,6 @@ public class InstructionSetup {
     gridPane.add(floatingLabel, 0, 1);
     gridPane.add(floatingLatency, 1, 1);
 
-    gridPane.add(memoryLabel, 0, 2);
-    gridPane.add(memoryLatency, 1, 2);
 
     vbox.getChildren().addAll(titleLabel, gridPane);
 

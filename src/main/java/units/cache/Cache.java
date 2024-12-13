@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
+import gui.setupStage.CacheSetup;
 import gui.setupStage.InstructionSetup;
 import instructions.Instruction;
 import units.stage.addressStage.LoadStage;
@@ -126,13 +127,13 @@ public class Cache {
 		if (!requestedBlocks[0]) {
 			// Send the address, get the targetBlock and replace
 			Block replacementBlock1 = memory.readFromMem(blockBaseAddress);
-			replacementBlock1.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+			replacementBlock1.setLastUsedCycle(cycle + 1 + CacheSetup.getLatency());
 			replacementBlock1.setDirtyBit(false);
 
 			Block leastRecentlyUsedBlock1 = blocks.remove();
 
 			if (leastRecentlyUsedBlock1.isDirtyBit() && leastRecentlyUsedBlock1.getTag() == replacementBlock1.getTag()) {
-				leastRecentlyUsedBlock1.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+				leastRecentlyUsedBlock1.setLastUsedCycle(cycle + 1 + CacheSetup.getLatency());
 				blocks.add(leastRecentlyUsedBlock1);
 			} else {
 				writeBackFromCacheToMemory(leastRecentlyUsedBlock1);
@@ -144,14 +145,14 @@ public class Cache {
 		if (!requestedBlocks[1]) {
 			// Send the address + blockSize - 1 , get the targetBlock and replace
 			Block replacementBlock2 = memory.readFromMem(secondBlockBaseAddress);
-			replacementBlock2.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+			replacementBlock2.setLastUsedCycle(cycle + 1 + CacheSetup.getLatency());
 			replacementBlock2.setDirtyBit(false);
 
 			Block leastRecentlyUsedBlock2 = blocks.remove();
 			writeBackFromCacheToMemory(leastRecentlyUsedBlock2);
 
 			if (leastRecentlyUsedBlock2.isDirtyBit() && leastRecentlyUsedBlock2.getTag() == replacementBlock2.getTag()) {
-				leastRecentlyUsedBlock2.setLastUsedCycle(cycle + 1 + InstructionSetup.getMemoryLatency());
+				leastRecentlyUsedBlock2.setLastUsedCycle(cycle + 1 + CacheSetup.getLatency());
 				blocks.add(leastRecentlyUsedBlock2);
 			} else {
 
