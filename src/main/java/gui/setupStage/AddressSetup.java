@@ -4,7 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class AddressSetup {
   private static TextField loadSize = new TextField();
@@ -18,11 +18,11 @@ public class AddressSetup {
     return Integer.parseInt(storeSize.getText());
   }
 
-  public static HBox setup(){
-    HBox hbox = new HBox();
-    hbox.setSpacing(10);
-    hbox.setAlignment(javafx.geometry.Pos.CENTER);
-    hbox.getStyleClass().add("hbox-container");
+  public static VBox setup(){
+    VBox vbox = new VBox();
+    vbox.setSpacing(10);
+    vbox.setAlignment(javafx.geometry.Pos.TOP_CENTER);
+    vbox.getStyleClass().add("vbox-container");
 
     GridPane gridPane = new GridPane();
     gridPane.setHgap(5);
@@ -30,6 +30,8 @@ public class AddressSetup {
     gridPane.setPadding(new Insets(20));
     gridPane.getStyleClass().add("vbox-container");
 
+    Label titleLabel = new Label("Load/Store Buffers");
+    titleLabel.getStyleClass().add("label-title");
 
     Label loadBufferLabel = new Label("load Buffer Size");
     loadSize.setPromptText("Enter size");
@@ -44,9 +46,9 @@ public class AddressSetup {
     gridPane.add(storeBufferLabel, 0, 1);
     gridPane.add(storeSize, 1, 1);
 
-    hbox.getChildren().add(gridPane);
+    vbox.getChildren().addAll(titleLabel, gridPane);
 
-    return hbox;
+    return vbox;
   }
 
 }

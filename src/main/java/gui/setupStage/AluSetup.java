@@ -4,7 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class AluSetup {
   private static TextField floatingAdder = new TextField();
@@ -22,11 +22,11 @@ public class AluSetup {
   public static int getIntegerAdder() {
     return Integer.parseInt(integerAdder.getText());
   }
-  public static HBox setup() {
-    HBox hbox = new HBox();
-    hbox.setSpacing(10);
-    hbox.setAlignment(javafx.geometry.Pos.CENTER);
-    hbox.getStyleClass().add("hbox-container");
+  public static VBox setup() {
+    VBox vbox = new VBox();
+    vbox.setSpacing(10);
+    vbox.setAlignment(javafx.geometry.Pos.TOP_CENTER);
+    vbox.getStyleClass().add("vbox-container");
 
     GridPane gridPane = new GridPane();
     gridPane.setHgap(5);
@@ -34,6 +34,8 @@ public class AluSetup {
     gridPane.setPadding(new Insets(20));
     gridPane.getStyleClass().add("vbox-container");
 
+    Label titleLabel = new Label("Reservation Stations");
+    titleLabel.getStyleClass().add("label-title");
 
     Label floatingAdderLabel = new Label("Floating Adder");
     floatingAdder.setPromptText("Enter size");
@@ -44,7 +46,6 @@ public class AluSetup {
     Label integerAdderLabel = new Label("Integer Adder");
     integerAdder.setPromptText("Enter size");
 
-
     gridPane.add(floatingAdderLabel, 0, 0);
     gridPane.add(floatingAdder, 1, 0);
 
@@ -54,8 +55,8 @@ public class AluSetup {
     gridPane.add(integerAdderLabel, 0, 2);
     gridPane.add(integerAdder, 1, 2);
 
-    hbox.getChildren().add(gridPane);
+    vbox.getChildren().addAll(titleLabel, gridPane);
 
-    return hbox;
+    return vbox;
   }
 }

@@ -30,10 +30,10 @@ public class SetupStage {
 		Scene scene = new Scene(borderPane, 1500, 600);
 
 		HBox loadInstructions = FileSetup.setupFile(stage);
-		HBox cacheSetup = CacheSetup.setup();
-		HBox instructionSetup = InstructionSetup.setup();
-		HBox reservationSetup = AluSetup.setup();
-		HBox bufferSetup = AddressSetup.setup();
+		VBox cacheSetup = CacheSetup.setup();
+		VBox instructionSetup = InstructionSetup.setup();
+		VBox reservationSetup = AluSetup.setup();
+		VBox bufferSetup = AddressSetup.setup();
 
 		Button startButton = new Button("Start!");
 

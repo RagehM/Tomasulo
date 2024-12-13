@@ -4,7 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class InstructionSetup {
 
@@ -24,11 +24,11 @@ public class InstructionSetup {
     return Integer.parseInt(memoryLatency.getText());
   }
 
-  public static HBox setup() {
-    HBox hbox = new HBox();
-    hbox.setSpacing(10);
-    hbox.setAlignment(javafx.geometry.Pos.CENTER);
-    hbox.getStyleClass().add("hbox-container");
+  public static VBox setup() {
+    VBox vbox = new VBox();
+    vbox.setSpacing(10);
+    vbox.setAlignment(javafx.geometry.Pos.TOP_CENTER);
+    vbox.getStyleClass().add("vbox-container");
 
     GridPane gridPane = new GridPane();
     gridPane.setHgap(5);
@@ -36,6 +36,8 @@ public class InstructionSetup {
     gridPane.setPadding(new Insets(20));
     gridPane.getStyleClass().add("vbox-container");
 
+    Label titleLabel = new Label("Instructions Latency");
+    titleLabel.getStyleClass().add("label-title");
 
     Label integerLabel = new Label("Integer Latency:");
     integerLatency.setPromptText("Enter latency (cycles)");
@@ -46,7 +48,6 @@ public class InstructionSetup {
     Label memoryLabel = new Label("Memory Latency:");
     memoryLatency.setPromptText("Enter latency (cycles)");
 
-
     gridPane.add(integerLabel, 0, 0);
     gridPane.add(integerLatency, 1, 0);
 
@@ -56,8 +57,8 @@ public class InstructionSetup {
     gridPane.add(memoryLabel, 0, 2);
     gridPane.add(memoryLatency, 1, 2);
 
-    hbox.getChildren().add(gridPane);
+    vbox.getChildren().addAll(titleLabel, gridPane);
 
-    return hbox;
+    return vbox;
   }
 }
